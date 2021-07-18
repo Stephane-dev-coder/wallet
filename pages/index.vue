@@ -14,6 +14,7 @@
       <WidgetNews />
       <WidgetSend />
       <WidgetReceive />
+      <WidgetAppstore />
     </div>
   </div>
 </template>
