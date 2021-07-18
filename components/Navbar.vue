@@ -25,6 +25,7 @@
           transition
           duration-300
           hover:bg-gray-100
+          focus:text-white focus:bg-black focus:outline-none
           text-lg
         "
       >
@@ -43,7 +44,7 @@
           duration-300
           hover:bg-gray-100
           text-lg
-          focus:text-white focus:bg-black
+          focus:text-white focus:bg-black focus:outline-none
         "
       >
         <i class="bx bx-bell"></i>
@@ -65,6 +66,7 @@
           focus:ring
           focus:ring-black
           focus:ring-offset-2
+          focus:outline-none
         "
       >
         Connnect Wallet

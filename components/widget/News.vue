@@ -4,7 +4,23 @@
       News
       <NuxtLink
         to="/news"
-        class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-lg text-sm"
+        class="
+          flex
+          items-center
+          px-3
+          py-2
+          hover:bg-gray-100
+          rounded-lg
+          text-sm
+          focus:text-white
+          focus:bg-black
+          focus:ring
+          focus:ring-black
+          focus:ring-offset-2
+          focus:outline-none
+          transition
+          duration-300
+        "
       >
         Voir plus <i class="bx bx-right-arrow-alt ml-2"></i>
       </NuxtLink>
@@ -20,19 +36,49 @@
         gap-3
       "
     >
-      <NuxtLink to="/news/1">
+      <NuxtLink
+        to="/news/1"
+        class="
+          focus:ring focus:ring-black focus:ring-offset-2 focus:outline-none
+          rounded-xl
+        "
+      >
         <WidgetNewsItem />
       </NuxtLink>
-      <NuxtLink to="/news/2">
+      <NuxtLink
+        to="/news/2"
+        class="
+          focus:ring focus:ring-black focus:ring-offset-2 focus:outline-none
+          rounded-xl
+        "
+      >
         <WidgetNewsItem />
       </NuxtLink>
-      <NuxtLink to="/news/3">
+      <NuxtLink
+        to="/news/3"
+        class="
+          focus:ring focus:ring-black focus:ring-offset-2 focus:outline-none
+          rounded-xl
+        "
+      >
         <WidgetNewsItem />
       </NuxtLink>
-      <NuxtLink to="/news/4">
+      <NuxtLink
+        to="/news/4"
+        class="
+          focus:ring focus:ring-black focus:ring-offset-2 focus:outline-none
+          rounded-xl
+        "
+      >
         <WidgetNewsItem />
       </NuxtLink>
-      <NuxtLink to="/news/5">
+      <NuxtLink
+        to="/news/5"
+        class="
+          focus:ring focus:ring-black focus:ring-offset-2 focus:outline-none
+          rounded-xl
+        "
+      >
         <WidgetNewsItem />
       </NuxtLink>
     </div>
