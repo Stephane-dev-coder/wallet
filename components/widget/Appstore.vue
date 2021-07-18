@@ -36,15 +36,27 @@
         Decouvrir <i class="bx bx-right-arrow-alt ml-2"></i>
       </NuxtLink>
     </h3>
-    <div class="grid grid-rows-1 gap-4 mt-6">
+    <div class="flex flex-row mt-6 overflow-x-auto">
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItem class="mr-4" />
       <div class="flex flex-col items-center w-32">
         <div
           class="
+            flex
+            justify-center
+            items-center
             h-32
             w-32
-            bg-white
+            bg-green-400
             rounded-2xl
-            bg-white
             shadow-lg
             cursor-pointer
             transform
@@ -53,9 +65,9 @@
             overflow-hidden
           "
         >
-          <img src="/app.jpeg" alt="" />
+          <i class="bx bx-plus text-white text-6xl"></i>
         </div>
-        <span class="text-xs mt-4">Trading PancakeSwap</span>
+        <span class="text-xs mt-4">et plus encore</span>
       </div>
     </div>
   </div>
