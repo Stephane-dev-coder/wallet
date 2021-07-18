@@ -1,6 +1,8 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col" style="min-height: 100vh">
     <Navbar />
-    <Nuxt />
+    <div class="bg-nice-white flex-grow">
+      <Nuxt />
+    </div>
   </div>
 </template>
