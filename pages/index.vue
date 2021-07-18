@@ -12,8 +12,10 @@
       <WidgetPrice />
       <WidgetVolume />
       <WidgetNews />
-      <WidgetSend />
-      <WidgetReceive />
+      <WidgetSend v-if="isConnected" />
+      <WidgetSendBlured v-else />
+      <WidgetReceive v-if="isConnected" />
+      <WidgetReceiveBlured v-else />
       <WidgetAppstore />
     </div>
   </div>
@@ -21,6 +23,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapState } from 'vuex'
 
-export default Vue.extend({})
+export default Vue.extend({
+  computed: {
+    ...mapState('wallet', ['isConnected']),
+  },
+})
 </script>

@@ -4,8 +4,24 @@
       Gains
       <span class="text-sm text-gray-400">24H</span>
     </h3>
-    <p class="font-bold text-lg text-green-500">
+    <p v-if="isConnected" class="font-bold text-lg text-green-500">
       +673248.87 <span class="text-blue-500">STI</span>
     </p>
+
+    <div v-else class="flex items-center font-bold">
+      <div class="h-4 w-32 bg-gray-200 rounded-sm"></div>
+      <span class="ml-2 text-blue-500">STI</span>
+    </div>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { mapState } from 'vuex'
+
+export default Vue.extend({
+  computed: {
+    ...mapState('wallet', ['isConnected']),
+  },
+})
+</script>
