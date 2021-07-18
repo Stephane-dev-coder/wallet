@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto">
+  <div class="container mx-auto px-4">
     <div class="mt-10">
       <h2 class="text-3xl">Bienvenue !</h2>
       <h2 class="text-xs mt-1 text-gray-600">
@@ -8,6 +8,7 @@
     </div>
     <div class="grid grid-cols-3 gap-4 mt-10">
       <WidgetNews />
+      <WidgetTransaction />
     </div>
   </div>
 </template>

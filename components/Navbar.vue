@@ -9,10 +9,10 @@
       border-b border-gray-200
     "
   >
-    <div class="w-1/2 text-lg font-semibold text-gray-700">
+    <div class="text-lg font-semibold text-gray-700">
       <NuxtLink to="/">STI2D Wallet</NuxtLink>
     </div>
-    <div class="w-1/2 flex flex-row justify-end">
+    <div class="flex-grow flex flex-row justify-end">
       <button
         class="
           flex
