@@ -4,15 +4,24 @@
       News
       <span class="text-sm text-gray-400">Quoi de neuf aujourd'hui ?</span>
     </h3>
-    <div class="mt-4 grid grid-cols-3 gap-2">
-      <WidgetNewsItem />
-      <WidgetNewsItem />
-      <WidgetNewsItem />
+    <div class="mt-4 grid grid-cols-3 gap-3">
+      <NuxtLink to="/news/1">
+        <WidgetNewsItem />
+      </NuxtLink>
+      <NuxtLink to="/news/2">
+        <WidgetNewsItem />
+      </NuxtLink>
+      <NuxtLink to="/news/3">
+        <WidgetNewsItem />
+      </NuxtLink>
     </div>
     <div class="flex justify-end mt-4 items-center">
-      <button class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-lg">
+      <NuxtLink
+        to="/news"
+        class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-lg"
+      >
         Voir plus <i class="bx bx-right-arrow-alt ml-2"></i>
-      </button>
+      </NuxtLink>
     </div>
   </div>
 </template>

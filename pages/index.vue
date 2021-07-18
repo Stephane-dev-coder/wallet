@@ -8,7 +8,6 @@
     </div>
     <div class="grid grid-cols-3 gap-4 mt-10">
       <WidgetNews />
-      <div class="bg-white shadow rounded p-4">Transactions</div>
     </div>
   </div>
 </template>
