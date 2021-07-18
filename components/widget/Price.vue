@@ -4,7 +4,7 @@
       Prix
     </h3>
     <p class="font-bold text-lg">
-      0.000043$ = <span class="text-blue-500">$STI2D</span>
+      0.000043$ = 1 <span class="text-blue-500">STI</span>
     </p>
   </div>
 </template>

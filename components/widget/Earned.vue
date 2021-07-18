@@ -5,7 +5,7 @@
       <span class="text-sm text-gray-400">24H</span>
     </h3>
     <p class="font-bold text-lg text-green-500">
-      +673248.87 <span class="text-blue-500">$STI2D</span>
+      +673248.87 <span class="text-blue-500">STI</span>
     </p>
   </div>
 </template>

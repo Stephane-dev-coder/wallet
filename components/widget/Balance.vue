@@ -4,7 +4,7 @@
       Solde
     </h3>
     <p class="font-bold text-lg">
-      673248.87 <span class="text-blue-500">$STI2D</span>
+      673248.87 <span class="text-blue-500">STI</span>
     </p>
   </div>
 </template>
