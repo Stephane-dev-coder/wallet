@@ -3,13 +3,15 @@
     class="
       flex flex-row
       bg-white
+      dark:bg-black
       items-center
       h-14
       px-4
       border-b border-gray-200
+      dark:border-transparent
     "
   >
-    <div class="text-lg font-semibold text-gray-700">
+    <div class="text-lg font-semibold text-gray-700 dark:text-gray-200">
       <NuxtLink to="/">STI2D Wallet</NuxtLink>
     </div>
     <div class="flex-grow flex flex-row justify-end">
@@ -25,11 +27,16 @@
           transition
           duration-300
           hover:bg-gray-100
+          dark:hover:bg-gray-800
           focus:text-white focus:bg-black focus:outline-none
+          dark:focus:text-black dark:focus:bg-white
           text-lg
+          dark:text-gray-200
         "
+        @click="toggleDark"
       >
-        <i class="bx bx-moon"></i>
+        <i v-if="isDark" class="bx bx-sun"></i>
+        <i v-else class="bx bx-moon"></i>
       </button>
       <button
         class="
@@ -43,8 +50,11 @@
           transition
           duration-300
           hover:bg-gray-100
-          text-lg
+          dark:hover:bg-gray-800
           focus:text-white focus:bg-black focus:outline-none
+          dark:focus:text-black dark:focus:bg-white
+          text-lg
+          dark:text-gray-200
         "
       >
         <i class="bx bx-bell"></i>
@@ -52,21 +62,34 @@
       <button
         class="
           bg-white
+          dark:bg-black
+          text-black
+          dark:text-white
           border-2 border-black
+          dark:border-white
           px-5
           py-2
           text-sm
           rounded-lg
           transition
           duration-300
-          hover:text-white hover:border-transparent hover:bg-black
+          ring-offset-2
+          hover:text-white
+          dark:hover:text-black
+          hover:border-black
+          dark:hover:border-white
+          hover:bg-black
+          dark:hover:bg-white
           focus:text-white
+          dark:focus:text-black
           focus:bg-black
-          focus:border-transparent
-          focus:ring
-          focus:ring-black
-          focus:ring-offset-2
+          dark:focus:bg-white
+          focus:border-black
+          dark:focus:border-white
+          focus:ring focus:ring-black
+          dark:focus:ring-white
           focus:outline-none
+          dark:ring-offset-black
         "
       >
         Connnect Wallet
@@ -74,3 +97,17 @@
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { mapActions, mapState } from 'vuex'
+
+export default Vue.extend({
+  computed: {
+    ...mapState('app', ['isDark']),
+  },
+  methods: {
+    ...mapActions('app', ['toggleDark']),
+  },
+})
+</script>
