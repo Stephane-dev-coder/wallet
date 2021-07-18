@@ -6,9 +6,14 @@
         La revolution est enfin arriver !
       </h2>
     </div>
-    <div class="grid grid-cols-3 gap-4 mt-10">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
+      <WidgetBalance />
+      <WidgetEarned />
+      <WidgetPrice />
+      <WidgetVolume />
       <WidgetNews />
-      <WidgetTransaction />
+      <WidgetSend />
+      <WidgetReceive />
     </div>
   </div>
 </template>
