@@ -1,5 +1,16 @@
 <template>
-  <div class="bg-white shadow-lg rounded-lg p-4 col-span-4 flex flex-col">
+  <div
+    class="
+      bg-white
+      shadow-lg
+      rounded-lg
+      p-4
+      col-span-1
+      md:col-span-2
+      lg:col-span-4
+      flex flex-col
+    "
+  >
     <h3 class="text-lg flex justify-between items-center">
       News
       <NuxtLink
