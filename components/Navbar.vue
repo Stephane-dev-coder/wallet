@@ -43,27 +43,6 @@
       </button>
       <button
         class="
-          flex
-          justify-center
-          items-center
-          h-10
-          w-10
-          mr-6
-          rounded
-          transition
-          duration-300
-          hover:bg-gray-100
-          dark:hover:bg-gray-800
-          focus:text-white focus:bg-black focus:outline-none
-          dark:focus:text-black dark:focus:bg-white
-          text-lg
-          dark:text-gray-200
-        "
-      >
-        <i class="bx bx-bell"></i>
-      </button>
-      <button
-        class="
           bg-white
           dark:bg-nice-dark
           text-black
