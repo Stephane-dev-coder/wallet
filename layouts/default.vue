@@ -13,11 +13,38 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 
 export default Vue.extend({
   computed: {
-    ...mapState('app', ['isDark']),
+    ...mapState('app', ['isDark', 'darkPreference']),
+  },
+  mounted() {
+    if (process.browser) {
+      switch (this.darkPreference) {
+        case 'system':
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            this.setDark()
+          } else {
+            this.setLight()
+          }
+          break
+        case 'light':
+          this.setLight()
+          break
+
+        case 'dark':
+          this.setLight()
+          break
+
+        default:
+          this.setLight()
+          break
+      }
+    }
+  },
+  methods: {
+    ...mapMutations('app', ['setDark', 'setLight']),
   },
 })
 </script>
