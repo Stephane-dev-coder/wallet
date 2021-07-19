@@ -1,8 +1,8 @@
 <template>
   <div class="container mx-auto px-4 mb-20">
     <div class="mt-10">
-      <h2 class="text-3xl">Bienvenue !</h2>
-      <h2 class="text-xs mt-1 text-gray-600">
+      <h2 class="text-3xl dark:text-gray-200">Bienvenue !</h2>
+      <h2 class="text-xs mt-1 text-gray-600 dark:text-gray-400">
         La revolution est enfin arriver !
       </h2>
     </div>
