@@ -33,7 +33,10 @@
           text-lg
           dark:text-gray-200
         "
-        @click="toggleDark"
+        @mousedown="darkMouseDown"
+        @mouseup="darkMouseUp"
+        @mouseleave="darkMouseUp"
+        @click="darkClick"
       >
         <i v-if="isDark" class="bx bx-sun"></i>
         <i v-else class="bx bx-moon"></i>
@@ -100,14 +103,37 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 
 export default Vue.extend({
+  data() {
+    return {
+      reset: setTimeout(() => {}, 0),
+      preventToggle: false,
+    }
+  },
   computed: {
     ...mapState('app', ['isDark']),
   },
   methods: {
+    darkMouseDown() {
+      const timeoutId = setTimeout(() => {
+        this.setDarkPreference('system')
+        this.preventToggle = true
+        clearTimeout(timeoutId)
+      }, 1000)
+      this.reset = timeoutId
+    },
+    darkMouseUp() {
+      clearTimeout(this.reset)
+    },
+    darkClick() {
+      if (!this.preventToggle) {
+        this.toggleDark()
+      }
+    },
     ...mapActions('app', ['toggleDark']),
+    ...mapMutations('app', ['setDarkPreference']),
   },
 })
 </script>

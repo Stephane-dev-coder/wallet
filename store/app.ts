@@ -1,7 +1,7 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 
 export const state = () => ({
-  isDark: true,
+  isDark: window.localStorage.getItem('darkPreference') === 'dark',
   darkPreference: window.localStorage.getItem('darkPreference')
     ? window.localStorage.getItem('darkPreference')
     : 'system',

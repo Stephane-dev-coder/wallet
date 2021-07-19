@@ -34,7 +34,7 @@ export default Vue.extend({
           break
 
         case 'dark':
-          this.setLight()
+          this.setDark()
           break
 
         default:
