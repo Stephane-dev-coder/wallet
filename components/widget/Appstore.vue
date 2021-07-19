@@ -2,6 +2,7 @@
   <div
     class="
       bg-white
+      dark:bg-dark-1
       shadow-lg
       rounded-lg
       p-4
@@ -11,7 +12,7 @@
       flex flex-col
     "
   >
-    <h3 class="text-lg flex justify-between items-center">
+    <h3 class="text-lg flex justify-between items-center dark:text-gray-400">
       <div><span class="line-through">App</span> STI Store</div>
       <NuxtLink
         to="/store"
@@ -21,16 +22,21 @@
           px-3
           py-2
           hover:bg-gray-100
+          dark:hover:bg-dark-16
           rounded-lg
           text-sm
           focus:text-white
+          dark:focus:text-black
           focus:bg-black
+          dark:focus:bg-white
           focus:ring
           focus:ring-black
+          focus:ring-white
           focus:ring-offset-2
           focus:outline-none
           transition
           duration-300
+          dark:ring-offset-black
         "
       >
         Decouvrir <i class="bx bx-right-arrow-alt ml-2"></i>
@@ -67,7 +73,7 @@
         >
           <i class="bx bx-plus text-white text-6xl"></i>
         </div>
-        <span class="text-xs mt-4">et plus encore</span>
+        <span class="text-xs mt-4 dark:text-white">et plus encore</span>
       </div>
     </div>
   </div>

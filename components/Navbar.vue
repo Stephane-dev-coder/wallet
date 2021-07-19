@@ -62,7 +62,7 @@
       <button
         class="
           bg-white
-          dark:bg-black
+          dark:bg-nice-dark
           text-black
           dark:text-white
           border-2 border-black

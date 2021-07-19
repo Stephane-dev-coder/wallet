@@ -1,6 +1,25 @@
 <template>
-  <div class="bg-white shadow-lg rounded-lg p-4 flex flex-col col-span-1">
-    <h3 class="text-lg flex justify-between items-center text-gray-500">
+  <div
+    class="
+      bg-white
+      shadow-lg
+      rounded-lg
+      p-4
+      flex flex-col
+      col-span-1
+      dark:bg-dark-1
+    "
+  >
+    <h3
+      class="
+        text-lg
+        flex
+        justify-between
+        items-center
+        text-gray-500
+        dark:text-gray-400
+      "
+    >
       Receive
     </h3>
     <div class="flex flex-col justify-center items-center flex-grow">
@@ -13,6 +32,7 @@
           transition
           duration-300
           cursor-pointer
+          dark:text-white
         "
         >0x78665f6d14727401cb7ea58ef23fd5350270f365</span
       >
@@ -22,24 +42,35 @@
       <button
         class="
           mt-6
-          flex
-          items-center
           bg-white
+          dark:bg-nice-dark
+          text-black
+          dark:text-white
           border-2 border-black
+          dark:border-white
           px-5
           py-2
           text-sm
           rounded-lg
           transition
           duration-300
-          hover:text-white hover:border-transparent hover:bg-black
-          focus:outline-none
+          ring-offset-2
+          hover:text-white
+          dark:hover:text-black
+          hover:border-black
+          dark:hover:border-white
+          hover:bg-black
+          dark:hover:bg-white
           focus:text-white
+          dark:focus:text-black
           focus:bg-black
-          focus:border-transparent
-          focus:ring
-          focus:ring-black
-          focus:ring-offset-2
+          dark:focus:bg-white
+          focus:border-black
+          dark:focus:border-white
+          focus:ring focus:ring-black
+          dark:focus:ring-white
+          focus:outline-none
+          dark:ring-offset-black
         "
       >
         Partager <i class="bx bxs-share-alt ml-2"></i>

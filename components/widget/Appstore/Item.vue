@@ -17,6 +17,6 @@
     >
       <img src="/app.jpeg" alt="" />
     </div>
-    <span class="text-xs mt-4">Trading PancakeSwap</span>
+    <span class="text-xs mt-4 dark:text-white">Trading PancakeSwap</span>
   </div>
 </template>
