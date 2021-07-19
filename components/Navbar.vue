@@ -73,6 +73,7 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        @click="clickConnect"
       >
         Connnect Wallet
       </button>
@@ -85,6 +86,12 @@ import Vue from 'vue'
 import { mapActions, mapState, mapMutations } from 'vuex'
 
 export default Vue.extend({
+  props: {
+    clickConnect: {
+      type: Function,
+      default: () => {},
+    },
+  },
   data() {
     return {
       reset: setTimeout(() => {}, 0),
