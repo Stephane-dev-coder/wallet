@@ -58,16 +58,6 @@
           </div>
           <div class="mt-6 grid grid-cols-8 gap-4">
             <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
-            <ProviderMetamask />
           </div>
         </div>
       </div>
