@@ -47,9 +47,16 @@ export const getProvider = async (init: boolean = false) => {
         provider,
       }
     } catch (e) {
-      return {
-        ok: false,
-        error: 'window.ethereum not found be sure MetaMask is installed !',
+      if (e.code === 4001) {
+        return {
+          ok: false,
+          error: 'Vous devez connecter un de vos comptes',
+        }
+      } else {
+        return {
+          ok: false,
+          error: "Quelque chose c'est mal passer",
+        }
       }
     }
   } else if (window.ethereum) {

@@ -11,8 +11,8 @@
     "
     @click="handleClick"
   >
-    <img src="/providers/metamask.png" alt="MetaMask logo" />
-    <span class="text-xs dark:text-gray-400 mt-2">MetaMask</span>
+    <img src="/providers/tokenpocket.png" alt="Token Pocket logo" />
+    <span class="text-xs dark:text-gray-400 mt-2">TockenPocket</span>
   </div>
 </template>
 
@@ -22,9 +22,9 @@ import { mapActions } from 'vuex'
 
 export default Vue.extend({
   methods: {
-    handleClick() {
+    async handleClick() {
       // @TODO Rajouter un syteme qui affiche correctement les erreurs interne
-      this.useWallet('metamask')
+      await this.useWallet('metamask')
     },
     ...mapActions('wallet', ['useWallet']),
   },
