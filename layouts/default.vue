@@ -8,7 +8,10 @@
     <div class="bg-nice-white dark:bg-nice-dark flex-grow">
       <Nuxt />
     </div>
-    <div v-if="connect" class="absolute inset-0 bg-black bg-opacity-40 z-20">
+    <div
+      v-if="connect && !isConnected"
+      class="absolute inset-0 bg-black bg-opacity-40 z-20"
+    >
       <div
         class="h-screen flex justify-center items-center sticky"
         @click.self="connect = false"
@@ -77,6 +80,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('app', ['isDark', 'darkPreference']),
+    ...mapState('wallet', ['isConnected']),
   },
   mounted() {
     if (process.browser) {

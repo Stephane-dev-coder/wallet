@@ -7,6 +7,7 @@ interface RequestArguments {
 
 interface EthereumProvider {
   request: (args: RequestArguments) => Promise<unknown>
+  on: (event: string, callback: () => void) => void
 }
 
 declare global {
@@ -15,16 +16,21 @@ declare global {
   }
 }
 
-export const getProvider = async () => {
-  if (window.ethereum) {
+export const getWalletAddress = async (
+  provider: ethers.providers.Web3Provider
+) => {
+  const accounts = await provider.listAccounts()
+  return accounts[0]
+}
+
+export const getProvider = async (init: boolean = false) => {
+  if (window.ethereum && init) {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' })
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      provider.on('network', (_, oldNetwork: {}) => {
-        if (oldNetwork) {
-          window.location.reload()
-        }
+      window.ethereum.on('chainChanged', () => {
+        window.location.reload()
       })
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
       return {
         ok: true,
         provider,
@@ -35,6 +41,12 @@ export const getProvider = async () => {
         error: 'window.ethereum not found be sure MetaMask is installed !',
       }
     }
+  } else if (window.ethereum) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    return {
+      ok: true,
+      provider,
+    }
   } else {
     return {
       ok: false,
@@ -43,4 +55,4 @@ export const getProvider = async () => {
   }
 }
 
-export default { getProvider }
+export default { getProvider, getWalletAddress }

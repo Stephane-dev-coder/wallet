@@ -73,22 +73,26 @@
           focus:outline-none
           dark:ring-offset-black
         "
-        @click="clickConnect"
+        @click="handleConnect"
       >
-        Connnect Wallet
+        {{ isConnected ? displayAddress(address) : 'Connnect Wallet' }}
       </button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { PropType } from 'vue'
 import { mapActions, mapState, mapMutations } from 'vuex'
 
 export default Vue.extend({
   props: {
     clickConnect: {
-      type: Function,
+      type: Function as PropType<() => void>,
+      default: () => {},
+    },
+    clickUserSettings: {
+      type: Function as PropType<() => void>,
       default: () => {},
     },
   },
@@ -100,8 +104,17 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('app', ['isDark']),
+    ...mapState('wallet', ['isConnected', 'address']),
   },
   methods: {
+    displayAddress(address: string) {
+      return address.slice(0, 4) + '...' + address.slice(address.length - 4)
+    },
+    handleConnect() {
+      if (this.isConnected) {
+        if (this.clickUserSettings) this.clickUserSettings()
+      } else if (this.clickConnect) this.clickConnect()
+    },
     darkMouseDown() {
       const timeoutId = setTimeout(() => {
         this.setDarkPreference('system')
