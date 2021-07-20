@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
 export default Vue.extend({
   data() {
@@ -84,6 +84,7 @@ export default Vue.extend({
   },
   mounted() {
     if (process.browser) {
+      this.connectWallet()
       switch (this.darkPreference) {
         case 'system':
           if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -111,6 +112,7 @@ export default Vue.extend({
       this.connect = true
     },
     ...mapMutations('app', ['setDark', 'setLight']),
+    ...mapActions('wallet', ['connectWallet']),
   },
 })
 </script>

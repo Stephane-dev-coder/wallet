@@ -23,6 +23,17 @@ export const getWalletAddress = async (
   return accounts[0]
 }
 
+export const isAlreayConnected = async (
+  provider: ethers.providers.Web3Provider
+) => {
+  const accounts = await provider.listAccounts()
+  if (accounts.length > 0) {
+    return true
+  } else {
+    return false
+  }
+}
+
 export const getProvider = async (init: boolean = false) => {
   if (window.ethereum && init) {
     try {
@@ -55,4 +66,4 @@ export const getProvider = async (init: boolean = false) => {
   }
 }
 
-export default { getProvider, getWalletAddress }
+export default { getProvider, getWalletAddress, isAlreayConnected }

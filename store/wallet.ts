@@ -3,7 +3,9 @@ import MetaMask from './wallet/metamask'
 
 export const state = () => ({
   isConnected: false,
-  walletUsed: '',
+  walletUsed: window.localStorage.getItem('walletUsed')
+    ? window.localStorage.getItem('walletUsed')
+    : '',
   address: '',
 })
 
@@ -14,6 +16,7 @@ export const getters: GetterTree<RootState, RootState> = {}
 export const mutations: MutationTree<RootState> = {
   setWallet(state, wallet) {
     state.walletUsed = wallet
+    window.localStorage.setItem('walletUsed', wallet)
   },
   login(state, address) {
     state.isConnected = true
@@ -30,15 +33,28 @@ export const actions: ActionTree<RootState, RootState> = {
     switch (wallet) {
       case 'metamask': {
         const metamask = await MetaMask.getProvider(true)
-        if (metamask.ok) {
+        if (metamask.ok && metamask.provider) {
           commit('setWallet', wallet)
-          if (metamask.provider) {
+          const address = await MetaMask.getWalletAddress(metamask.provider)
+          commit('login', address)
+        }
+        return metamask
+      }
+    }
+  },
+  async connectWallet({ commit, state }) {
+    const wallet = state.walletUsed
+    switch (wallet) {
+      case 'metamask': {
+        const metamask = await MetaMask.getProvider()
+        if (metamask.ok && metamask.provider) {
+          const isConnected = await MetaMask.isAlreayConnected(
+            metamask.provider
+          )
+          if (isConnected) {
             const address = await MetaMask.getWalletAddress(metamask.provider)
             commit('login', address)
           }
-          return metamask.provider
-        } else {
-          return metamask.error
         }
       }
     }
