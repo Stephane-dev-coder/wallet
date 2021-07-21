@@ -91,7 +91,7 @@ export default Vue.extend({
       type: Function as PropType<() => void>,
       default: () => {},
     },
-    clickUserSettings: {
+    clickUser: {
       type: Function as PropType<() => void>,
       default: () => {},
     },
@@ -112,7 +112,7 @@ export default Vue.extend({
     },
     handleConnect() {
       if (this.isConnected) {
-        if (this.clickUserSettings) this.clickUserSettings()
+        if (this.clickUser) this.clickUser()
       } else if (this.clickConnect) this.clickConnect()
     },
     darkMouseDown() {

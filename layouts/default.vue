@@ -4,17 +4,17 @@
     :class="{ dark: isDark }"
     style="min-height: 100vh"
   >
-    <Navbar :click-connect="clickConnect" />
+    <Navbar :click-connect="clickConnect" :click-user="clickUser" />
     <div class="bg-nice-white dark:bg-nice-dark flex-grow">
       <Nuxt />
     </div>
     <div
-      v-if="connect && !isConnected"
+      v-if="connectModal && !isConnected"
       class="absolute inset-0 bg-black bg-opacity-40 z-20"
     >
       <div
         class="h-screen flex justify-center items-center sticky"
-        @click.self="connect = false"
+        @click.self="connectModal = false"
       >
         <div
           class="
@@ -30,7 +30,7 @@
           "
         >
           <div class="flex justify-between">
-            Select provider
+            Selectionner un provider
             <button
               class="
                 flex
@@ -54,7 +54,7 @@
                 duration-300
                 dark:ring-offset-black
               "
-              @click="connect = false"
+              @click="connectModal = false"
             >
               Sortir <i class="bx bx-right-arrow-alt ml-2"></i>
             </button>
@@ -63,6 +63,63 @@
             <ProviderMetamask />
             <ProviderTrustwallet />
             <ProviderTokenpocket />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      v-if="userModal && isConnected"
+      class="absolute inset-0 bg-black bg-opacity-40 z-20"
+    >
+      <div
+        class="h-screen flex justify-center items-center sticky"
+        @click.self="userModal = false"
+      >
+        <div
+          class="
+            m-6
+            bg-white
+            text-lg
+            dark:bg-dark-24 dark:text-gray-200
+            w-full
+            lg:w-2/3
+            p-6
+            rounded-xl
+            flex flex-col
+          "
+        >
+          <div class="flex justify-between">
+            Preferences
+            <button
+              class="
+                flex
+                items-center
+                px-3
+                py-2
+                hover:bg-gray-100
+                dark:hover:bg-dark-8
+                rounded-lg
+                text-sm
+                focus:text-white
+                dark:focus:text-black
+                focus:bg-black
+                dark:focus:bg-white
+                focus:ring
+                focus:ring-black
+                focus:ring-white
+                focus:ring-offset-2
+                focus:outline-none
+                transition
+                duration-300
+                dark:ring-offset-black
+              "
+              @click="userModal = false"
+            >
+              Sortir <i class="bx bx-right-arrow-alt ml-2"></i>
+            </button>
+          </div>
+          <div>
+            <!-- Layout de parametres -->
           </div>
         </div>
       </div>
@@ -77,7 +134,8 @@ import { mapState, mapMutations, mapActions } from 'vuex'
 export default Vue.extend({
   data() {
     return {
-      connect: false,
+      connectModal: false,
+      userModal: false,
     }
   },
   computed: {
@@ -111,7 +169,10 @@ export default Vue.extend({
   },
   methods: {
     clickConnect() {
-      this.connect = true
+      this.connectModal = true
+    },
+    clickUser() {
+      this.userModal = true
     },
     ...mapMutations('app', ['setDark', 'setLight']),
     ...mapActions('wallet', ['connectWallet']),
