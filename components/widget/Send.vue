@@ -61,33 +61,7 @@
       </div>
       <div class="flex flex-col col-span-2">
         <span class="text-sm text-gray-500">Message </span>
-        <div class="h-20 w-full relative">
-          <textarea
-            class="
-              dark:bg-dark-4
-              resize-none
-              h-full
-              w-full
-              mt-2
-              p-2
-              rounded-lg
-              border
-              dark:border-dark-4
-              focus:outline-none focus:ring-1 focus:border-blue-400
-              dark:focus:border-blue-600
-              relative
-              dark:text-gray-200
-            "
-            maxlength="240"
-            placeholder="Merci pour l'extincteur !"
-            type="text"
-          />
-          <div
-            class="absolute bottom-0 right-0 text-xs mr-3 mb-2 dark:text-white"
-          >
-            230/240
-          </div>
-        </div>
+        <CustomTextarea v-model="textarea" />
       </div>
     </div>
     <div class="mt-10 text-sm grid gap-2">
@@ -141,3 +115,14 @@
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
+  data() {
+    return {
+      textarea: '',
+    }
+  },
+})
+</script>
