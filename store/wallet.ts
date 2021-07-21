@@ -7,6 +7,14 @@ interface State {
   address: string
   balance: null | number
   earned: null | number
+  price: {
+    value: number
+    change: number
+  }
+  volume: {
+    value: number
+    change: number
+  }
 }
 
 export const state = (): State => ({
@@ -17,6 +25,14 @@ export const state = (): State => ({
   address: '',
   balance: null,
   earned: null,
+  price: {
+    value: 0,
+    change: 0,
+  },
+  volume: {
+    value: 0,
+    change: 0,
+  },
 })
 
 export type RootState = ReturnType<typeof state>
@@ -47,6 +63,12 @@ export const mutations: MutationTree<RootState> = {
   setEarned(state, earned) {
     state.earned = earned
   },
+  setPrice(state, price) {
+    state.price = price
+  },
+  setVolume(state, volume) {
+    state.volume = volume
+  },
   login(state, address) {
     state.isConnected = true
     state.address = address
@@ -66,7 +88,7 @@ export const actions: ActionTree<RootState, RootState> = {
           commit('setWallet', wallet)
           const address = await MetaMask.getWalletAddress(metamask.provider)
           commit('login', address)
-          dispatch('getInfos')
+          dispatch('getWalletInfos')
         }
         return metamask
       }
@@ -84,19 +106,35 @@ export const actions: ActionTree<RootState, RootState> = {
           if (isConnected) {
             const address = await MetaMask.getWalletAddress(metamask.provider)
             commit('login', address)
-            dispatch('getInfos')
+            dispatch('getWalletInfos')
           }
         }
       }
     }
   },
-  getInfos({ commit }) {
+  getWalletInfos({ commit }) {
     setTimeout(() => {
       commit('setBalance', 694200000 * Math.random())
     }, Math.floor(Math.random() * 5000))
 
     setTimeout(() => {
-      commit('setEarned', 100000 * Math.random() - 100000 * Math.random())
+      commit('setEarned', 200000 * Math.random() - 100000 * Math.random())
     }, Math.floor(Math.random() * 5000))
+  },
+  getGlobalInfos({ commit }) {
+    setTimeout(() => {
+      const positive = Math.random() > 0.5 ? 1 : -1
+      commit('setPrice', {
+        value: 0.01 * Math.random(),
+        change: positive * 100 * Math.random(),
+      })
+    }, Math.floor(Math.random() * 1000))
+    setTimeout(() => {
+      const positive = Math.random() > 0.5 ? 1 : -1
+      commit('setVolume', {
+        value: 1_000_000 * Math.random(),
+        change: positive * 100 * Math.random(),
+      })
+    }, Math.floor(Math.random() * 1000))
   },
 }

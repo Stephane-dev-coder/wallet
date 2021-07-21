@@ -157,6 +157,7 @@ export default Vue.extend({
   mounted() {
     if (process.browser) {
       this.connectWallet()
+      this.getGlobalInfos()
       switch (this.darkPreference) {
         case 'system':
           if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -187,7 +188,7 @@ export default Vue.extend({
       this.userModal = true
     },
     ...mapMutations('app', ['setDark', 'setLight']),
-    ...mapActions('wallet', ['connectWallet']),
+    ...mapActions('wallet', ['connectWallet', 'getGlobalInfos']),
   },
 })
 </script>

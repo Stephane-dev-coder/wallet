@@ -11,9 +11,43 @@
       "
     >
       Prix
+      <span class="text-sm text-gray-400 dark:text-gray-600">24H</span>
     </h3>
-    <p class="font-bold text-lg dark:text-white">
-      0.000043$ = 1 <span class="text-blue-500">STI</span>
-    </p>
+    <div
+      class="
+        font-bold
+        text-lg
+        flex
+        items-center
+        justify-between
+        flex-wrap
+        dark:text-white
+      "
+    >
+      <div>
+        {{ price.value.toFixed(10) }}$ = 1
+        <span class="text-blue-500">STI</span>
+      </div>
+      <span
+        class="text-xs ml-1"
+        :class="{
+          'text-green-500': price.change >= 0,
+          'text-red-500': price.change < 0,
+        }"
+        >({{ price.change >= 0 ? '+' : ''
+        }}{{ price.change.toFixed(1) }}%)</span
+      >
+    </div>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { mapState } from 'vuex'
+
+export default Vue.extend({
+  computed: {
+    ...mapState('wallet', ['price']),
+  },
+})
+</script>

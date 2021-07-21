@@ -25,7 +25,7 @@
     <div v-else class="flex items-center font-bold">
       <div
         class="h-4 w-32 bg-gray-200 dark:bg-dark-8 rounded-sm"
-        :class="{ 'animate-pulse': isConnected && eanred == null }"
+        :class="{ 'animate-pulse': isConnected && earned == null }"
       ></div>
       <span class="ml-2 text-blue-500">STI</span>
     </div>

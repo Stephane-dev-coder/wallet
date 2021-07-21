@@ -23,7 +23,27 @@
         dark:text-white
       "
     >
-      2001 $ <span class="text-xs text-green-500 ml-1">(+ 1%)</span>
+      {{ volume.value.toFixed(2) }} $
+      <span
+        class="text-xs ml-1"
+        :class="{
+          'text-green-500': volume.change >= 0,
+          'text-red-500': volume.change < 0,
+        }"
+        >({{ volume.change >= 0 ? '+' : ''
+        }}{{ volume.change.toFixed(1) }}%)</span
+      >
     </p>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { mapState } from 'vuex'
+
+export default Vue.extend({
+  computed: {
+    ...mapState('wallet', ['volume']),
+  },
+})
+</script>
