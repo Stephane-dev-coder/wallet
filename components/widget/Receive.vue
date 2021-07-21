@@ -69,7 +69,7 @@
         :value="address"
       />
       <div class="flex justify-center bg-white shadow-xl p-2 rounded-xl mt-4">
-        <img src="/qrcode.png" alt="" />
+        <img :src="retrieveQrCode()" alt="" />
       </div>
       <button
         class="
@@ -114,17 +114,23 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapState } from 'vuex'
+import Qrious from 'qrious'
 
 export default Vue.extend({
   data() {
     return {
       coppied: false,
+      qrcode: new Qrious({ size: 200 }),
     }
   },
   computed: {
     ...mapState('wallet', ['address']),
   },
   methods: {
+    retrieveQrCode() {
+      this.qrcode.value = this.address
+      return this.qrcode.toDataURL()
+    },
     copy() {
       const address = this.$refs.address as any
       address.focus()
