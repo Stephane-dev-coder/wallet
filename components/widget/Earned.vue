@@ -13,12 +13,20 @@
       Gains
       <span class="text-sm text-gray-400 dark:text-gray-600">24H</span>
     </h3>
-    <p v-if="isConnected" class="font-bold text-lg text-green-500">
-      +673248.87 <span class="text-blue-500">STI</span>
+    <p
+      v-if="isConnected && earned != null"
+      class="font-bold text-lg"
+      :class="{ 'text-green-500': earned >= 0, 'text-red-500': earned < 0 }"
+    >
+      {{ earned >= 0 ? '+' : '' }}{{ earned }}
+      <span class="text-blue-500">STI</span>
     </p>
 
     <div v-else class="flex items-center font-bold">
-      <div class="h-4 w-32 bg-gray-200 dark:bg-dark-8 rounded-sm"></div>
+      <div
+        class="h-4 w-32 bg-gray-200 dark:bg-dark-8 rounded-sm"
+        :class="{ 'animate-pulse': isConnected && eanred == null }"
+      ></div>
       <span class="ml-2 text-blue-500">STI</span>
     </div>
   </div>
@@ -30,7 +38,7 @@ import { mapState } from 'vuex'
 
 export default Vue.extend({
   computed: {
-    ...mapState('wallet', ['isConnected']),
+    ...mapState('wallet', ['isConnected', 'earned']),
   },
 })
 </script>
