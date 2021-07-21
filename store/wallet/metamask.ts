@@ -19,6 +19,14 @@ declare global {
 export const getWalletAddress = async (
   provider: ethers.providers.Web3Provider
 ) => {
+  if (window.ethereum) {
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
+    })
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload()
+    })
+  }
   const accounts = await provider.listAccounts()
   return accounts[0]
 }
@@ -38,9 +46,6 @@ export const getProvider = async (init: boolean = false) => {
   if (window.ethereum && init) {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' })
-      window.ethereum.on('chainChanged', () => {
-        window.location.reload()
-      })
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       return {
         ok: true,
