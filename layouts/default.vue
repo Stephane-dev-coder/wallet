@@ -18,12 +18,14 @@
       >
         <div
           class="
-            m-6
+            mx-4
             bg-white
             text-lg
             dark:bg-dark-24 dark:text-gray-200
             w-full
+            md:w-4/5
             lg:w-2/3
+            xl:w-3/5
             p-6
             rounded-xl
             flex flex-col
@@ -59,7 +61,17 @@
               Sortir <i class="bx bx-right-arrow-alt ml-2"></i>
             </button>
           </div>
-          <div class="mt-6 grid grid-cols-8 gap-4">
+          <div
+            class="
+              mt-6
+              grid grid-cols-5
+              sm:grid-cols-6
+              md:grid-cols-7
+              lg:grid-cols-8
+              xl:grid-cols-8
+              gap-4
+            "
+          >
             <ProviderMetamask />
             <ProviderTrustwallet />
             <ProviderTokenpocket />
