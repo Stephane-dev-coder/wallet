@@ -8,6 +8,7 @@
       flex flex-col
       col-span-1
       dark:bg-dark-1
+      relative
     "
   >
     <h3
@@ -23,19 +24,50 @@
       Receive
     </h3>
     <div class="flex flex-col justify-center items-center flex-grow">
-      <span
+      <button
         class="
+          group
           w-10/12
           text-sm text-center
           break-words
           hover:text-blue-500
           transition
-          duration-300
-          cursor-pointer
-          dark:text-white
+          duration-100
+          dark:text-white dark:hover:text-blue-500
+          relative
         "
-        >0x78665f6d14727401cb7ea58ef23fd5350270f365</span
+        @click="copy"
       >
+        <transition name="fade">
+          <div
+            v-if="coppied"
+            class="absolute inset-x-0 top-0 flex justify-center"
+          >
+            <div
+              class="
+                py-1
+                dark:text-white dark:bg-black dark:bg-opacity-75
+                rounded
+                w-24
+                transform
+                -translate-y-9
+              "
+            >
+              Copier !
+            </div>
+          </div>
+        </transition>
+        <span class="transform group-focus:scale-95">
+          {{ address }}
+        </span>
+      </button>
+      <input
+        ref="address"
+        type="text"
+        class="absolute"
+        style="z-index: -1"
+        :value="address"
+      />
       <div class="flex justify-center bg-white shadow-xl p-2 rounded-xl mt-4">
         <img src="/qrcode.png" alt="" />
       </div>
@@ -78,3 +110,45 @@
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { mapState } from 'vuex'
+
+export default Vue.extend({
+  data() {
+    return {
+      coppied: false,
+    }
+  },
+  computed: {
+    ...mapState('wallet', ['address']),
+  },
+  methods: {
+    copy() {
+      const address = this.$refs.address as any
+      address.focus()
+      address.select()
+
+      setTimeout(() => {
+        if (document.execCommand('copy')) {
+          this.coppied = true
+          setTimeout(() => {
+            this.coppied = false
+          }, 3000)
+        }
+      }, 100)
+    },
+  },
+})
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+</style>
