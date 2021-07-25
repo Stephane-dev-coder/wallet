@@ -28,6 +28,7 @@
       <div class="flex flex-col">
         <span class="text-sm text-gray-500">Destinataire </span>
         <input
+          v-model="to"
           class="
             dark:bg-dark-4
             p-2
@@ -45,6 +46,7 @@
       <div class="flex flex-col">
         <span class="text-sm text-gray-500">Montant </span>
         <input
+          v-model.number="amount"
           class="
             dark:bg-dark-4
             p-2
@@ -56,12 +58,12 @@
             dark:focus:border-blue-600 dark:text-gray-200
           "
           placeholder="10000"
-          type="text"
+          type="number"
         />
       </div>
       <div class="flex flex-col col-span-2">
         <span class="text-sm text-gray-500">Message </span>
-        <CustomTextarea v-model="textarea" />
+        <CustomTextarea v-model="message" />
       </div>
     </div>
     <div class="mt-10 text-sm grid gap-2">
@@ -73,7 +75,8 @@
       <div
         class="flex justify-between items-center font-semibold dark:text-white"
       >
-        Frais STI2D <span class="text-blue-500 font-bold">10 STI</span>
+        Frais STI2D
+        <span class="text-blue-500 font-bold">{{ stiFees }} STI</span>
       </div>
     </div>
     <div class="flex justify-end mt-6">
@@ -118,11 +121,42 @@
 
 <script lang="ts">
 import Vue from 'vue'
-export default Vue.extend({
+
+interface Data {
+  to: string
+  amount: string
+  message: string
+}
+
+export default Vue.extend<Data, any, any>({
   data() {
     return {
-      textarea: '',
+      to: '',
+      amount: '',
+      message: '',
     }
+  },
+  computed: {
+    stiFees() {
+      if (this.amount === '') {
+        return '--'
+      } else {
+        return parseFloat(this.amount) * 0.1
+      }
+    },
   },
 })
 </script>
+
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+}
+</style>
