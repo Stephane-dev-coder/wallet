@@ -1,5 +1,5 @@
-import { ethers } from 'ethers'
-
+import { BigNumber, ethers } from 'ethers'
+import address from '../vars/contracts'
 interface RequestArguments {
   method: string
   params?: unknown[] | object
@@ -29,6 +29,24 @@ export const getWalletAddress = async (
   }
   const accounts = await provider.listAccounts()
   return accounts[0]
+}
+
+export const getTokenBalance = async (
+  provider: ethers.providers.Web3Provider,
+  account: string
+): Promise<number> => {
+  const tokenAddress = address.token
+  const balanceAbi = [
+    'function balanceOf(address account) public view override returns (uint256)',
+  ]
+  const tokenInstance = new ethers.Contract(tokenAddress, balanceAbi, provider)
+
+  let balance: BigNumber = await tokenInstance.balanceOf(account)
+  balance = balance.div(
+    ethers.BigNumber.from(10).pow(ethers.BigNumber.from(10))
+  )
+  const balanceNumber = balance.toNumber() / 10 ** 8
+  return balanceNumber
 }
 
 export const isAlreayConnected = async (
@@ -78,4 +96,9 @@ export const getProvider = async (init: boolean = false) => {
   }
 }
 
-export default { getProvider, getWalletAddress, isAlreayConnected }
+export default {
+  getProvider,
+  getWalletAddress,
+  isAlreayConnected,
+  getTokenBalance,
+}

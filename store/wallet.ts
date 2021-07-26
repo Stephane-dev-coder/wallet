@@ -112,10 +112,14 @@ export const actions: ActionTree<RootState, RootState> = {
       }
     }
   },
-  getWalletInfos({ commit }) {
-    setTimeout(() => {
-      commit('setBalance', 694200000 * Math.random())
-    }, Math.floor(Math.random() * 5000))
+  async getWalletInfos({ commit, state }) {
+    const provider = await MetaMask.getProvider()
+    if (provider.ok === true && provider.provider) {
+      commit(
+        'setBalance',
+        await MetaMask.getTokenBalance(provider.provider, state.address)
+      )
+    }
 
     setTimeout(() => {
       commit('setEarned', 200000 * Math.random() - 100000 * Math.random())
