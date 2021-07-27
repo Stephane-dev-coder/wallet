@@ -112,6 +112,7 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        @click="onClick"
       >
         Envoyer <i class="bx bxs-send ml-2"></i>
       </button>
@@ -121,6 +122,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapActions } from 'vuex'
+
+import { ethers } from 'ethers'
 
 interface Data {
   to: string
@@ -144,6 +148,17 @@ export default Vue.extend<Data, any, any>({
         return parseFloat(this.amount) * 0.1
       }
     },
+  },
+  methods: {
+    onClick() {
+      this.sendTokens({
+        to: this.to,
+        amount: ethers.BigNumber.from(this.amount).mul(
+          ethers.BigNumber.from(10).pow(ethers.BigNumber.from(18))
+        ),
+      })
+    },
+    ...mapActions('wallet', ['sendTokens']),
   },
 })
 </script>

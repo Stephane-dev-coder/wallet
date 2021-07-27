@@ -49,6 +49,44 @@ export const getTokenBalance = async (
   return balanceNumber
 }
 
+export const sendTokens = async (
+  provider: ethers.providers.Web3Provider,
+  from: string,
+  to: string,
+  amount: number | BigNumber
+): Promise<{
+  ok: boolean
+  error?: {
+    code: number
+    message: string
+  }
+}> => {
+  const tokenAddress = address.token
+  const balanceAbi = [
+    'function transfer(address recipient, uint256 amount) public returns (bool)',
+  ]
+  const tokenInstance = new ethers.Contract(
+    tokenAddress,
+    balanceAbi,
+    provider
+  ).connect(provider.getSigner())
+
+  try {
+    await tokenInstance.transfer(to, amount, { from })
+    return {
+      ok: true,
+    }
+  } catch (err) {
+    return {
+      ok: false,
+      error: {
+        code: 0,
+        message: err,
+      },
+    }
+  }
+}
+
 export const isAlreayConnected = async (
   provider: ethers.providers.Web3Provider
 ) => {
@@ -101,4 +139,5 @@ export default {
   getWalletAddress,
   isAlreayConnected,
   getTokenBalance,
+  sendTokens,
 }

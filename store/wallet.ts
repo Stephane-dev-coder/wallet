@@ -1,3 +1,4 @@
+import { BigNumber } from '@ethersproject/bignumber'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import MetaMask from './wallet/metamask'
 
@@ -140,5 +141,14 @@ export const actions: ActionTree<RootState, RootState> = {
         change: positive * 100 * Math.random(),
       })
     }, Math.floor(Math.random() * 1000))
+  },
+  async sendTokens(
+    { state },
+    { to, amount }: { to: string; amount: number | BigNumber }
+  ) {
+    const provider = await MetaMask.getProvider()
+    if (provider.ok === true && provider.provider) {
+      await MetaMask.sendTokens(provider.provider, state.address, to, amount)
+    }
   },
 }
