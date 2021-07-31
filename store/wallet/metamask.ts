@@ -38,75 +38,6 @@ export const getTokenBalance = async (
   return await tokenInstance.balanceOf(account)
 }
 
-export const sendTokens = async (
-  provider: ethers.providers.Web3Provider,
-  from: string,
-  to: string,
-  amount: BigNumber
-): Promise<{
-  ok: boolean
-  error?: {
-    code: number
-    message: string
-  }
-}> => {
-  const tokenAddress = address.token
-  const balanceAbi = [
-    'function transfer(address recipient, uint256 amount) public returns (bool)',
-  ]
-  const tokenInstance = new ethers.Contract(
-    tokenAddress,
-    balanceAbi,
-    provider
-  ).connect(provider.getSigner())
-
-  try {
-    await tokenInstance.transfer(to, amount, { from })
-    return {
-      ok: true,
-    }
-  } catch (err) {
-    if (err.code === -32603 && err.message.includes('nonce')) {
-      return {
-        ok: false,
-        error: {
-          code: -32603,
-          message: 'Nonce incorrect',
-        },
-      }
-    }
-    if (err.code === 4001) {
-      return {
-        ok: false,
-        error: {
-          code: 4001,
-          message: "L'utilisateur a rejeter la requette",
-        },
-      }
-    }
-
-    if (
-      err.code === -32603 &&
-      err.data.message === 'VM Exception while processing transaction: revert'
-    ) {
-      return {
-        ok: false,
-        error: {
-          code: -32604,
-          message: 'VM rejection',
-        },
-      }
-    }
-    return {
-      ok: false,
-      error: {
-        code: 0,
-        message: 'Oops quelque chose est arriver !',
-      },
-    }
-  }
-}
-
 export const isAlreayConnected = async (
   provider: ethers.providers.Web3Provider
 ) => {
@@ -222,5 +153,4 @@ export default {
   getWalletAddress,
   isAlreayConnected,
   getTokenBalance,
-  sendTokens,
 }

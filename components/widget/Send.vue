@@ -137,7 +137,7 @@
 import Vue from 'vue'
 import { mapActions, mapState } from 'vuex'
 
-import { ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 
 interface Data {
   to: string
@@ -174,39 +174,6 @@ export default Vue.extend<Data, any, any>({
         return parseFloat(this.amount) * 0.1
       }
     },
-    ...mapState('wallet', ['balance']),
-  },
-  methods: {
-    leaveAmountInput() {
-      if (this.amount !== '') {
-        if (this.amount < 0) {
-          this.amountError = true
-          this.amountErrorMessage = 'Le montant doit etre positif !'
-        } else if (this.amount === 0) {
-          this.amountError = true
-          this.amountErrorMessage = "Putain mais comment j'envoie 0 moi ?"
-        } else {
-          const amountBN = this.getBNAmount()
-          if (amountBN.gt(this.balance)) {
-            this.amountError = true
-            this.amountErrorMessage =
-              'Vous ne pouvez pas envoyer plus que ce que vous posseder !'
-          } else {
-            this.amountError = false
-          }
-        }
-      }
-    },
-    leaveToInput() {
-      if (this.isToGood) {
-        try {
-          const address = ethers.utils.getAddress(this.to)
-          this.to = address
-        } catch (error) {
-          this.to = ''
-        }
-      }
-    },
     getBNAmount() {
       const amountSplit = this.amount.toString().split('.')
       const intPart = parseInt(amountSplit[0].substring(0, 8))
@@ -233,11 +200,64 @@ export default Vue.extend<Data, any, any>({
       }
       return amountBN
     },
+    ...mapState('wallet', ['balance']),
+  },
+  methods: {
+    leaveAmountInput() {
+      if (this.amount !== '') {
+        if (this.amount < 0) {
+          this.amountError = true
+          this.amountErrorMessage = 'Le montant doit etre positif !'
+        } else if (this.amount === 0) {
+          this.amountError = true
+          this.amountErrorMessage = "Putain mais comment j'envoie 0 moi ?"
+        } else {
+          const amountBN = this.getBNAmount
+          if (amountBN.gt(this.balance)) {
+            this.amountError = true
+            this.amountErrorMessage =
+              'Vous ne pouvez pas envoyer plus que ce que vous posseder !'
+          } else {
+            this.amountError = false
+          }
+        }
+      }
+    },
+    leaveToInput() {
+      if (this.isToGood) {
+        try {
+          const address = ethers.utils.getAddress(this.to)
+          this.to = address
+        } catch (error) {
+          this.to = ''
+        }
+      }
+    },
     async onClick() {
+      this.to = ''
+      this.amount = ''
+      this.message = ''
       const result: { ok: boolean; error?: { code: number; message: string } } =
         await this.sendTokens({
           to: this.to,
-          amount: this.getBNAmount(),
+          amount: this.getBNAmount,
+          callback:
+            (tx: string) =>
+            (_: string, __: string, ___: BigNumber, event: any) => {
+              if (event.transactionHash === tx) {
+                this.$vs.notification({
+                  position: 'top-right',
+                  color: 'success',
+                  icon: `<i class='bx bxs-check-circle' ></i>`,
+                  duration: 5000,
+                  title: 'Transaction effectuer !',
+                  text: 'Votre est argent a etait envoyer !',
+                })
+                return true
+              } else {
+                return false
+              }
+            },
         })
 
       if (!result.ok) {
@@ -272,7 +292,7 @@ export default Vue.extend<Data, any, any>({
       } else {
         this.$vs.notification({
           position: 'top-right',
-          color: 'rgb(59,222,200)',
+          color: 'rgb(59,130,246)',
           icon: `<i class='bx bxs-info-circle' ></i>`,
           duration: 5000,
           title: 'Transaction envoyer',

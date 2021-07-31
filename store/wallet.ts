@@ -1,6 +1,13 @@
-import { BigNumber } from '@ethersproject/bignumber'
+import { BigNumber, ethers } from 'ethers'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import MetaMask from './wallet/metamask'
+import ContractAddress from './vars/contracts'
+
+const tokenAbi = [
+  'function balanceOf(address account) public view override returns (uint256)',
+  'function transfer(address recipient, uint256 amount) public returns (bool)',
+  'event Transfer(address indexed from, address indexed to, uint amount)',
+]
 
 interface State {
   isConnected: boolean
@@ -15,6 +22,17 @@ interface State {
   volume: {
     value: number
     change: number
+  }
+  transactions: Array<{ from: string; to: string; amount: BigNumber }>
+  callbacks: {
+    transaction: Array<
+      (
+        from: string,
+        to: string,
+        amount: BigNumber,
+        event: any
+      ) => boolean | Promise<boolean>
+    >
   }
 }
 
@@ -33,6 +51,10 @@ export const state = (): State => ({
   volume: {
     value: 0,
     change: 0,
+  },
+  transactions: [],
+  callbacks: {
+    transaction: [],
   },
 })
 
@@ -78,6 +100,23 @@ export const mutations: MutationTree<RootState> = {
     state.isConnected = false
     state.address = ''
   },
+  addTransaction(state, transaction) {
+    state.transactions.push(transaction)
+  },
+  addCallback(state, callback) {
+    switch (callback.type) {
+      case 'transaction':
+        state.callbacks.transaction.push(callback.fun)
+        break
+    }
+  },
+  setCallback(state, callbacks) {
+    switch (callbacks.type) {
+      case 'transaction':
+        state.callbacks.transaction = callbacks.funs
+        break
+    }
+  },
 }
 
 export const actions: ActionTree<RootState, RootState> = {
@@ -114,13 +153,39 @@ export const actions: ActionTree<RootState, RootState> = {
       }
     }
   },
-  async getWalletInfos({ commit, state }) {
+  async getTokenBalance({ state }): Promise<BigNumber> {
+    const provider = await MetaMask.getProvider()
+    if (provider.ok && provider.provider) {
+      const tokenInstance = new ethers.Contract(
+        ContractAddress.token,
+        tokenAbi,
+        provider.provider
+      )
+
+      return await tokenInstance.balanceOf(state.address)
+    } else {
+      return ethers.BigNumber.from(0)
+    }
+  },
+  async getWalletInfos({ commit, dispatch, state }) {
     const provider = await MetaMask.getProvider()
     if (provider.ok === true && provider.provider) {
-      commit(
-        'setBalance',
-        await MetaMask.getTokenBalance(provider.provider, state.address)
+      const theProvider = provider.provider
+      const tokenInstance = new ethers.Contract(
+        ContractAddress.token,
+        tokenAbi,
+        theProvider
       )
+
+      tokenInstance.on('Transfer', async (from, to, amount, event) => {
+        commit('setBalance', await dispatch('getTokenBalance'))
+        commit('addTransaction', { from, to, amount })
+        const callbacks = state.callbacks.transaction.filter(
+          async (fun) => await !fun(from, to, amount, event)
+        )
+        commit('setCallback', { type: 'transaction', funs: callbacks })
+      })
+      commit('setBalance', await dispatch('getTokenBalance'))
     }
 
     setTimeout(() => {
@@ -144,17 +209,87 @@ export const actions: ActionTree<RootState, RootState> = {
     }, Math.floor(Math.random() * 1000))
   },
   async sendTokens(
-    { state },
-    { to, amount }: { to: string; amount: BigNumber }
+    { state, commit },
+    {
+      to,
+      amount,
+      callback = () => () => {
+        return true
+      },
+    }: {
+      to: string
+      amount: BigNumber
+      callback: (
+        tx: string
+      ) => (
+        from: string,
+        to: string,
+        amount: BigNumber,
+        event: any
+      ) => boolean | Promise<boolean>
+    }
   ) {
     const provider = await MetaMask.getProvider()
     if (provider.ok === true && provider.provider) {
-      return await MetaMask.sendTokens(
-        provider.provider,
-        state.address,
-        to,
-        amount
-      )
+      const theProvider = provider.provider
+      const tokenInstance = new ethers.Contract(
+        ContractAddress.token,
+        tokenAbi,
+        theProvider
+      ).connect(theProvider.getSigner())
+
+      try {
+        const result = await tokenInstance.transfer(to, amount, {
+          from: state.address,
+        })
+        commit('addCallback', {
+          type: 'transaction',
+          fun: callback(result.hash),
+        })
+        return {
+          ok: true,
+        }
+      } catch (err) {
+        if (err.code === -32603 && err.message.includes('nonce')) {
+          return {
+            ok: false,
+            error: {
+              code: -32603,
+              message: 'Nonce incorrect',
+            },
+          }
+        }
+        if (err.code === 4001) {
+          return {
+            ok: false,
+            error: {
+              code: 4001,
+              message: "L'utilisateur a rejeter la requette",
+            },
+          }
+        }
+
+        if (
+          err.code === -32603 &&
+          err.data.message ===
+            'VM Exception while processing transaction: revert'
+        ) {
+          return {
+            ok: false,
+            error: {
+              code: -32604,
+              message: 'VM rejection',
+            },
+          }
+        }
+        return {
+          ok: false,
+          error: {
+            code: 0,
+            message: 'Oops quelque chose est arriver !',
+          },
+        }
+      }
     }
     return {
       ok: false,
