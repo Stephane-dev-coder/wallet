@@ -8,6 +8,7 @@ interface RequestArguments {
 interface EthereumProvider {
   request: (args: RequestArguments) => Promise<unknown>
   on: (event: string, callback: () => void) => void
+  isConnected: () => boolean
 }
 
 declare global {
@@ -19,14 +20,7 @@ declare global {
 export const getWalletAddress = async (
   provider: ethers.providers.Web3Provider
 ) => {
-  if (window.ethereum) {
-    window.ethereum.on('chainChanged', () => {
-      window.location.reload()
-    })
-    window.ethereum.on('accountsChanged', () => {
-      window.location.reload()
-    })
-  }
+  listen()
   const accounts = await provider.listAccounts()
   return accounts[0]
 }
@@ -98,38 +92,101 @@ export const isAlreayConnected = async (
   }
 }
 
-export const getProvider = async (init: boolean = false) => {
+const listen = () => {
+  if (window.ethereum) {
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
+    })
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload()
+    })
+  }
+}
+
+const checkValidity = async (
+  provider: ethers.providers.Web3Provider
+): Promise<{
+  ok: boolean
+  provider?: ethers.providers.Web3Provider | undefined
+  error?: { code: number; message: string } | undefined
+}> => {
+  if (window.ethereum) {
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' })
+    if (chainId !== '0x539') {
+      listen()
+      return {
+        ok: false,
+        error: {
+          code: 2, // A changer !! Besoins d'une logique d'erreur pas juste des nombre wesh
+          message: "Vous n'etes pas sur le bon reaseaux",
+        },
+      }
+    }
+    if (!window.ethereum.isConnected()) {
+      listen()
+      return {
+        ok: false,
+        error: {
+          code: 3, // A changer !! Besoins d'une logique d'erreur pas juste des nombre wesh
+          message: "Vous n'etes pas connecter au reseaux !",
+        },
+      }
+    }
+    return {
+      ok: true,
+      provider,
+    }
+  }
+  return {
+    ok: false,
+    error: {
+      code: 1, // A changer !! Besoins d'une logique d'erreur pas juste des nombre wesh
+      message: 'window.ethereum pas trouver veuiller installer MetaMask !',
+    },
+  }
+}
+
+export const getProvider = async (
+  init: boolean = false
+): Promise<{
+  ok: boolean
+  provider?: ethers.providers.Web3Provider | undefined
+  error?: { code: number; message: string } | undefined
+}> => {
   if (window.ethereum && init) {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' })
       const provider = new ethers.providers.Web3Provider(window.ethereum)
-      return {
-        ok: true,
-        provider,
-      }
+      return await checkValidity(provider)
     } catch (e) {
       if (e.code === 4001) {
         return {
           ok: false,
-          error: 'Vous devez connecter un de vos comptes',
+          error: {
+            code: 4001,
+            message: 'Vous avez refuser la connexion !',
+          },
         }
       } else {
         return {
           ok: false,
-          error: "Quelque chose c'est mal passer",
+          error: {
+            code: 0,
+            message: "Quelque chose c'est mal passer",
+          },
         }
       }
     }
   } else if (window.ethereum) {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-    return {
-      ok: true,
-      provider,
-    }
+    return await checkValidity(provider)
   } else {
     return {
       ok: false,
-      error: 'window.ethereum not found be sure MetaMask is installed !',
+      error: {
+        code: 1, // A changer !! Besoins d'une logique d'erreur pas juste des nombre wesh
+        message: 'window.ethereum pas trouver veuiller installer MetaMask !',
+      },
     }
   }
 }

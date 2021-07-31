@@ -1,1 +1,1 @@
-declare module 'qrious';
+declare module 'qrious'

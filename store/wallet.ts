@@ -110,6 +110,7 @@ export const actions: ActionTree<RootState, RootState> = {
             dispatch('getWalletInfos')
           }
         }
+        return metamask
       }
     }
   },
