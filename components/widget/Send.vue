@@ -83,7 +83,8 @@
       <div
         class="flex justify-between items-center font-semibold dark:text-white"
       >
-        Frais Reseau <span class="text-blue-500 font-bold">0.0002 BNB</span>
+        Frais Reseau
+        <span class="text-blue-500 font-bold">{{ displayFees }} MATIC</span>
       </div>
       <div
         class="flex justify-between items-center font-semibold dark:text-white"
@@ -156,6 +157,24 @@ export default Vue.extend<Data, any, any>({
     }
   },
   computed: {
+    displayFees() {
+      const fixedTo = 6
+      const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
+      let price = this.gasPrice
+        .mul(ethers.BigNumber.from(97000))
+        .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(puissance)))
+        .toString()
+      if (price.length < fixedTo || price.length === fixedTo) {
+        const diff = fixedTo - price.length
+        for (let i = 0; i < diff; i++) {
+          price = `0${price}`
+        }
+        return `0.${price}`
+      } else {
+        const diff = price.length - fixedTo
+        return `${price.substring(0, diff)}.${price.substring(diff)}`
+      }
+    },
     isToGood() {
       if (this.to === '') {
         return true
@@ -200,7 +219,7 @@ export default Vue.extend<Data, any, any>({
       }
       return amountBN
     },
-    ...mapState('wallet', ['balance']),
+    ...mapState('wallet', ['balance', 'gasPrice']),
   },
   methods: {
     leaveAmountInput() {

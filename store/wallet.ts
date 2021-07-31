@@ -34,6 +34,7 @@ interface State {
       ) => boolean | Promise<boolean>
     >
   }
+  gasPrice: BigNumber
 }
 
 export const state = (): State => ({
@@ -56,6 +57,9 @@ export const state = (): State => ({
   callbacks: {
     transaction: [],
   },
+  gasPrice: ethers.BigNumber.from(2).mul(
+    ethers.BigNumber.from(10).pow(ethers.BigNumber.from(9))
+  ),
 })
 
 export type RootState = ReturnType<typeof state>
