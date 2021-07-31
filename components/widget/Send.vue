@@ -233,11 +233,52 @@ export default Vue.extend<Data, any, any>({
       }
       return amountBN
     },
-    onClick() {
-      this.sendTokens({
-        to: this.to,
-        amount: this.getBNAmount(),
-      })
+    async onClick() {
+      const result: { ok: boolean; error?: { code: number; message: string } } =
+        await this.sendTokens({
+          to: this.to,
+          amount: this.getBNAmount(),
+        })
+
+      if (!result.ok) {
+        let title = "Une erreur c'est produite"
+        let text =
+          "Desoler une erreur c'est produite. Veuiller de l'aide au support et ne rafraichisser pas la page"
+        switch (result.error?.code) {
+          case -32603:
+            title = 'Nonce incorrect !'
+            text =
+              "Si vous avez cette erreur est vous n'etes pas un dev alors la... Ben c'est bizzare"
+            break
+          case 4001:
+            title = 'Rejection'
+            text = 'Vous avez rejeter la transaction !'
+            break
+          case -32604:
+            title = 'oopsie woopsie! '
+            text =
+              'oopsie woopsie! uwu we made a f**ky wucky!! a wittle f**ko boingo'
+            break
+        }
+
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 5000,
+          title,
+          text,
+        })
+      } else {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'rgb(59,222,200)',
+          icon: `<i class='bx bxs-info-circle' ></i>`,
+          duration: 5000,
+          title: 'Transaction envoyer',
+          text: `La transaction a etait envoyer ! En attente de confirmation`,
+        })
+      }
     },
     ...mapActions('wallet', ['sendTokens']),
   },

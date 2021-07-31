@@ -149,7 +149,19 @@ export const actions: ActionTree<RootState, RootState> = {
   ) {
     const provider = await MetaMask.getProvider()
     if (provider.ok === true && provider.provider) {
-      await MetaMask.sendTokens(provider.provider, state.address, to, amount)
+      return await MetaMask.sendTokens(
+        provider.provider,
+        state.address,
+        to,
+        amount
+      )
+    }
+    return {
+      ok: false,
+      error: {
+        code: 0,
+        message: 'No provider',
+      },
     }
   },
 }

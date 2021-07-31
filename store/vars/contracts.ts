@@ -1,4 +1,4 @@
 export default {
-  token: '0xD19198d25f5f738cd0A08a28c02bd9B02Bfcaf42',
-  random: '0x7FBAF9cD2709A90aAb486becf383CBa3d6E1Ae31',
+  token: '0xdfBEF7d608307db2df8F9d1F39e42a2078210Efb',
+  random: '0xbe8aA2007ab5ea9EF0DbdA335d311aA2Deb7c7AA',
 }

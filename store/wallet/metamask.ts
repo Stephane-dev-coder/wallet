@@ -66,11 +66,42 @@ export const sendTokens = async (
       ok: true,
     }
   } catch (err) {
+    if (err.code === -32603 && err.message.includes('nonce')) {
+      return {
+        ok: false,
+        error: {
+          code: -32603,
+          message: 'Nonce incorrect',
+        },
+      }
+    }
+    if (err.code === 4001) {
+      return {
+        ok: false,
+        error: {
+          code: 4001,
+          message: "L'utilisateur a rejeter la requette",
+        },
+      }
+    }
+
+    if (
+      err.code === -32603 &&
+      err.data.message === 'VM Exception while processing transaction: revert'
+    ) {
+      return {
+        ok: false,
+        error: {
+          code: -32604,
+          message: 'VM rejection',
+        },
+      }
+    }
     return {
       ok: false,
       error: {
         code: 0,
-        message: err,
+        message: 'Oops quelque chose est arriver !',
       },
     }
   }
