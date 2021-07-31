@@ -28,26 +28,21 @@ export const getWalletAddress = async (
 export const getTokenBalance = async (
   provider: ethers.providers.Web3Provider,
   account: string
-): Promise<number> => {
+): Promise<BigNumber> => {
   const tokenAddress = address.token
   const balanceAbi = [
     'function balanceOf(address account) public view override returns (uint256)',
   ]
   const tokenInstance = new ethers.Contract(tokenAddress, balanceAbi, provider)
 
-  let balance: BigNumber = await tokenInstance.balanceOf(account)
-  balance = balance.div(
-    ethers.BigNumber.from(10).pow(ethers.BigNumber.from(10))
-  )
-  const balanceNumber = balance.toNumber() / 10 ** 8
-  return balanceNumber
+  return await tokenInstance.balanceOf(account)
 }
 
 export const sendTokens = async (
   provider: ethers.providers.Web3Provider,
   from: string,
   to: string,
-  amount: number | BigNumber
+  amount: BigNumber
 ): Promise<{
   ok: boolean
   error?: {

@@ -16,7 +16,7 @@
       v-if="isConnected && balance != null"
       class="font-bold text-lg dark:text-white"
     >
-      {{ balance }} <span class="text-blue-500">STI</span>
+      {{ displayBalance }} <span class="text-blue-500">STI</span>
     </p>
     <div v-else class="flex items-center font-bold">
       <div
@@ -31,9 +31,16 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapState } from 'vuex'
+import { ethers } from 'ethers'
 
 export default Vue.extend({
   computed: {
+    displayBalance() {
+      const balance = this.balance
+        .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(12)))
+        .toString()
+      return `${balance.substring(0, 2)}.${balance.substring(2)}`
+    },
     ...mapState('wallet', ['isConnected', 'balance']),
   },
 })

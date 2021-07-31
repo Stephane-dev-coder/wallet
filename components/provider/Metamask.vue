@@ -58,6 +58,15 @@ export default Vue.extend<any, any, any, any>({
           title,
           text,
         })
+      } else {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'success',
+          icon: `<i class='bx bxs-check-circle' ></i>`,
+          duration: 2000,
+          title: 'Connexion avec success !',
+          text: 'Vous pouvez maintenant utiliser tout le potentielle STI',
+        })
       }
     },
     ...mapActions('wallet', ['useWallet']),

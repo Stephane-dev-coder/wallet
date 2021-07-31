@@ -6,7 +6,7 @@ interface State {
   isConnected: boolean
   walletUsed: string | null
   address: string
-  balance: null | number
+  balance: null | BigNumber
   earned: null | number
   price: {
     value: number
@@ -45,7 +45,7 @@ export const mutations: MutationTree<RootState> = {
     state.walletUsed = wallet
     window.localStorage.setItem('walletUsed', wallet)
   },
-  setBalance(state, balance: number) {
+  setBalance(state, balance: BigNumber) {
     state.balance = balance
     window.localStorage.setItem('balance', `${balance}`)
   },
@@ -57,7 +57,7 @@ export const mutations: MutationTree<RootState> = {
   },
   decrementBalance(state, n) {
     if (state.balance) {
-      state.balance = state.balance - n
+      state.balance = state.balance.sub(n)
       window.localStorage.setItem('balance', `${state.balance}`)
     }
   },
@@ -145,7 +145,7 @@ export const actions: ActionTree<RootState, RootState> = {
   },
   async sendTokens(
     { state },
-    { to, amount }: { to: string; amount: number | BigNumber }
+    { to, amount }: { to: string; amount: BigNumber }
   ) {
     const provider = await MetaMask.getProvider()
     if (provider.ok === true && provider.provider) {

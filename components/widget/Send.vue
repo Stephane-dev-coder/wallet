@@ -36,12 +36,17 @@
             border
             dark:border-dark-4
             mt-2
-            focus:outline-none focus:ring-1 focus:border-blue-400
-            dark:focus:border-blue-600 dark:text-gray-200
+            focus:outline-none focus:ring-2
+            dark:text-gray-200
           "
           placeholder="0x..."
           type="text"
+          :class="{ 'ring-2': !isToGood, 'ring-red-400': !isToGood }"
+          @blur="leaveToInput()"
         />
+        <p class="text-xs text-red-500 mt-2" :class="{ invisible: isToGood }">
+          L'adresse est incorrect
+        </p>
       </div>
       <div class="flex flex-col">
         <span class="text-sm text-gray-500">Montant </span>
@@ -54,12 +59,20 @@
             border
             dark:border-dark-4
             mt-2
-            focus:outline-none focus:ring-1 focus:border-blue-400
-            dark:focus:border-blue-600 dark:text-gray-200
+            focus:outline-none focus:ring-2
+            dark:text-gray-200
           "
           placeholder="10000"
           type="number"
+          :class="{ 'ring-2': amountError, 'ring-red-400': amountError }"
+          @blur="leaveAmountInput()"
         />
+        <p
+          class="text-xs text-red-500 mt-2"
+          :class="{ invisible: !amountError }"
+        >
+          {{ amountErrorMessage }}
+        </p>
       </div>
       <div class="flex flex-col col-span-2">
         <span class="text-sm text-gray-500">Message </span>
@@ -122,7 +135,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import { ethers } from 'ethers'
 
@@ -138,9 +151,22 @@ export default Vue.extend<Data, any, any>({
       to: '',
       amount: '',
       message: '',
+      amountError: false,
+      amountErrorMessage: '',
     }
   },
   computed: {
+    isToGood() {
+      if (this.to === '') {
+        return true
+      }
+      try {
+        ethers.utils.getAddress(this.to)
+        return true
+      } catch (e) {
+        return false
+      }
+    },
     stiFees() {
       if (this.amount === '') {
         return '--'
@@ -148,14 +174,69 @@ export default Vue.extend<Data, any, any>({
         return parseFloat(this.amount) * 0.1
       }
     },
+    ...mapState('wallet', ['balance']),
   },
   methods: {
+    leaveAmountInput() {
+      if (this.amount !== '') {
+        if (this.amount < 0) {
+          this.amountError = true
+          this.amountErrorMessage = 'Le montant doit etre positif !'
+        } else if (this.amount === 0) {
+          this.amountError = true
+          this.amountErrorMessage = "Putain mais comment j'envoie 0 moi ?"
+        } else {
+          const amountBN = this.getBNAmount()
+          if (amountBN.gt(this.balance)) {
+            this.amountError = true
+            this.amountErrorMessage =
+              'Vous ne pouvez pas envoyer plus que ce que vous posseder !'
+          } else {
+            this.amountError = false
+          }
+        }
+      }
+    },
+    leaveToInput() {
+      if (this.isToGood) {
+        try {
+          const address = ethers.utils.getAddress(this.to)
+          this.to = address
+        } catch (error) {
+          this.to = ''
+        }
+      }
+    },
+    getBNAmount() {
+      const amountSplit = this.amount.toString().split('.')
+      const intPart = parseInt(amountSplit[0].substring(0, 8))
+      let floatPart = 0
+      if (amountSplit[1]) {
+        floatPart = parseInt(amountSplit[1].substring(0, 10))
+      }
+
+      const intPartBN = ethers.BigNumber.from(intPart)
+      const floatPartBN = ethers.BigNumber.from(floatPart)
+
+      let amountBN = intPartBN.mul(
+        ethers.BigNumber.from(10).pow(ethers.BigNumber.from(18))
+      )
+
+      if (amountSplit[1]) {
+        amountBN = amountBN.add(
+          floatPartBN.mul(
+            ethers.BigNumber.from(10).pow(
+              ethers.BigNumber.from(18 - amountSplit[1].substring(0, 10).length)
+            )
+          )
+        )
+      }
+      return amountBN
+    },
     onClick() {
       this.sendTokens({
         to: this.to,
-        amount: ethers.BigNumber.from(this.amount).mul(
-          ethers.BigNumber.from(10).pow(ethers.BigNumber.from(18))
-        ),
+        amount: this.getBNAmount(),
       })
     },
     ...mapActions('wallet', ['sendTokens']),
