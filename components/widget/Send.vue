@@ -66,6 +66,7 @@
           type="number"
           :class="{ 'ring-2': amountError, 'ring-red-400': amountError }"
           @blur="leaveAmountInput()"
+          @input="userTyping()"
         />
         <p
           class="text-xs text-red-500 mt-2"
@@ -90,7 +91,15 @@
         class="flex justify-between items-center font-semibold dark:text-white"
       >
         Frais STI2D
-        <span class="text-blue-500 font-bold">{{ stiFees }} STI</span>
+        <span
+          v-if="typingTimeout === null || amount === ''"
+          class="text-blue-500 font-bold"
+          >{{ stiFees }} STI</span
+        >
+        <span v-else class="text-blue-500 font-bold">
+          <i class="bx bx-loader-alt animate-spin mr-1"></i>
+          <span>STI</span></span
+        >
       </div>
     </div>
     <div class="flex justify-end mt-6">
@@ -146,6 +155,23 @@ interface Data {
   message: string
 }
 
+const fees = (value: BigNumber, fixedTo = 6) => {
+  const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
+  let price = value
+    .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(puissance)))
+    .toString()
+  if (price.length < fixedTo || price.length === fixedTo) {
+    const diff = fixedTo - price.length
+    for (let i = 0; i < diff; i++) {
+      price = `0${price}`
+    }
+    return `0.${price}`
+  } else {
+    const diff = price.length - fixedTo
+    return `${price.substring(0, diff)}.${price.substring(diff)}`
+  }
+}
+
 export default Vue.extend<Data, any, any>({
   data() {
     return {
@@ -154,26 +180,13 @@ export default Vue.extend<Data, any, any>({
       message: '',
       amountError: false,
       amountErrorMessage: '',
+      stiFees: 0,
+      typingTimeout: null,
     }
   },
   computed: {
     displayFees() {
-      const fixedTo = 6
-      const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
-      let price = this.gasPrice
-        .mul(ethers.BigNumber.from(97000))
-        .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(puissance)))
-        .toString()
-      if (price.length < fixedTo || price.length === fixedTo) {
-        const diff = fixedTo - price.length
-        for (let i = 0; i < diff; i++) {
-          price = `0${price}`
-        }
-        return `0.${price}`
-      } else {
-        const diff = price.length - fixedTo
-        return `${price.substring(0, diff)}.${price.substring(diff)}`
-      }
+      return fees(this.gasPrice.mul(ethers.BigNumber.from(97000)))
     },
     isToGood() {
       if (this.to === '') {
@@ -186,42 +199,57 @@ export default Vue.extend<Data, any, any>({
         return false
       }
     },
-    stiFees() {
-      if (this.amount === '') {
-        return '--'
-      } else {
-        return parseFloat(this.amount) * 0.1
-      }
-    },
     getBNAmount() {
-      const amountSplit = this.amount.toString().split('.')
-      const intPart = parseInt(amountSplit[0].substring(0, 8))
-      let floatPart = 0
-      if (amountSplit[1]) {
-        floatPart = parseInt(amountSplit[1].substring(0, 10))
-      }
+      if (this.amount > 0) {
+        const amountSplit = this.amount.toString().split('.')
+        const intPart = parseInt(amountSplit[0].substring(0, 8))
+        let floatPart = 0
+        if (amountSplit[1]) {
+          floatPart = parseInt(amountSplit[1].substring(0, 10))
+        }
 
-      const intPartBN = ethers.BigNumber.from(intPart)
-      const floatPartBN = ethers.BigNumber.from(floatPart)
+        const intPartBN = ethers.BigNumber.from(intPart)
+        const floatPartBN = ethers.BigNumber.from(floatPart)
 
-      let amountBN = intPartBN.mul(
-        ethers.BigNumber.from(10).pow(ethers.BigNumber.from(18))
-      )
+        let amountBN = intPartBN.mul(
+          ethers.BigNumber.from(10).pow(ethers.BigNumber.from(18))
+        )
 
-      if (amountSplit[1]) {
-        amountBN = amountBN.add(
-          floatPartBN.mul(
-            ethers.BigNumber.from(10).pow(
-              ethers.BigNumber.from(18 - amountSplit[1].substring(0, 10).length)
+        if (amountSplit[1]) {
+          amountBN = amountBN.add(
+            floatPartBN.mul(
+              ethers.BigNumber.from(10).pow(
+                ethers.BigNumber.from(
+                  18 - amountSplit[1].substring(0, 10).length
+                )
+              )
             )
           )
-        )
+        }
+        return amountBN
+      } else {
+        return ethers.BigNumber.from(0)
       }
-      return amountBN
     },
     ...mapState('wallet', ['balance', 'gasPrice']),
   },
   methods: {
+    userTyping() {
+      if (this.typingTimeout === null) {
+        this.typingTimeout = setTimeout(async () => {
+          this.typingTimeout = null
+          const result = await this.getTokenFees(this.getBNAmount)
+          this.stiFees = fees(result)
+        }, 1000)
+      } else {
+        clearTimeout(this.typingTimeout)
+        this.typingTimeout = setTimeout(async () => {
+          this.typingTimeout = null
+          const result = await this.getTokenFees(this.getBNAmount)
+          this.stiFees = fees(result)
+        }, 1000)
+      }
+    },
     leaveAmountInput() {
       if (this.amount !== '') {
         if (this.amount < 0) {
@@ -319,7 +347,7 @@ export default Vue.extend<Data, any, any>({
         })
       }
     },
-    ...mapActions('wallet', ['sendTokens']),
+    ...mapActions('wallet', ['sendTokens', 'getTokenFees']),
   },
 })
 </script>

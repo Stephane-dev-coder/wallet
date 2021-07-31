@@ -6,6 +6,7 @@ import ContractAddress from './vars/contracts'
 const tokenAbi = [
   'function balanceOf(address account) public view override returns (uint256)',
   'function transfer(address recipient, uint256 amount) public returns (bool)',
+  'function getFeesFor(address account, uint256 amount) view external returns (uint)',
   'event Transfer(address indexed from, address indexed to, uint amount)',
 ]
 
@@ -167,6 +168,20 @@ export const actions: ActionTree<RootState, RootState> = {
       )
 
       return await tokenInstance.balanceOf(state.address)
+    } else {
+      return ethers.BigNumber.from(0)
+    }
+  },
+  async getTokenFees({ state }, amount: BigNumber): Promise<BigNumber> {
+    const provider = await MetaMask.getProvider()
+    if (provider.ok && provider.provider) {
+      const tokenInstance = new ethers.Contract(
+        ContractAddress.token,
+        tokenAbi,
+        provider.provider
+      )
+
+      return await tokenInstance.getFeesFor(state.address, amount)
     } else {
       return ethers.BigNumber.from(0)
     }
