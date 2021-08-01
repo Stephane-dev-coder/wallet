@@ -43,6 +43,10 @@
 import Vue from 'vue'
 import { mapState } from 'vuex'
 
+/**
+ * TODO: Faire en sorte d'afficher le Volume en STI ou $. Changement animer et declencher par un click sur le widget
+ */
+
 export default Vue.extend({
   computed: {
     ...mapState('wallet', ['volume']),

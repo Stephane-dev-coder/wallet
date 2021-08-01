@@ -1,4 +1,4 @@
-import { BigNumber, Contract, ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import MetaMask from './wallet/metamask'
 import ContractAddress from './vars/contracts'
@@ -307,7 +307,6 @@ export const actions: ActionTree<RootState, RootState> = {
             },
           }
         }
-        console.log(err)
         return {
           ok: false,
           error: {

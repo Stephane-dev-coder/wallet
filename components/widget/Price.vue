@@ -44,6 +44,10 @@
 import Vue from 'vue'
 import { mapState } from 'vuex'
 
+/**
+ * TODO: Cree une animation quand le prix change ! (Commme coinmarketcap)
+ */
+
 export default Vue.extend({
   computed: {
     ...mapState('wallet', ['price']),
