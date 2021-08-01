@@ -301,6 +301,7 @@ export const actions: ActionTree<RootState, RootState> = {
             },
           }
         }
+        console.log(err)
         return {
           ok: false,
           error: {

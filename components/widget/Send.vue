@@ -148,7 +148,8 @@ import Vue from 'vue'
 import { mapActions, mapState } from 'vuex'
 
 import { BigNumber, ethers } from 'ethers'
-
+// Disable button if form is not correct !
+// While waiting for signature spin button
 interface Data {
   to: string
   amount: string
@@ -281,9 +282,6 @@ export default Vue.extend<Data, any, any>({
       }
     },
     async onClick() {
-      this.to = ''
-      this.amount = ''
-      this.message = ''
       const result: { ok: boolean; error?: { code: number; message: string } } =
         await this.sendTokens({
           to: this.to,
@@ -306,6 +304,10 @@ export default Vue.extend<Data, any, any>({
               }
             },
         })
+
+      this.to = ''
+      this.amount = ''
+      this.message = ''
 
       if (!result.ok) {
         let title = "Une erreur c'est produite"
