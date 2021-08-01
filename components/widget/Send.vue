@@ -118,12 +118,6 @@
           transition
           duration-300
           ring-offset-2
-          hover:text-white
-          dark:hover:text-black
-          hover:border-black
-          dark:hover:border-white
-          hover:bg-black
-          dark:hover:bg-white
           focus:text-white
           dark:focus:text-black
           focus:bg-black
@@ -135,9 +129,20 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        :disabled="isButtonDisabled"
+        :class="{
+          'hover:text-white': !isButtonDisabled,
+          'dark:hover:text-black': !isButtonDisabled,
+          'hover:border-black': !isButtonDisabled,
+          'dark:hover:border-white': !isButtonDisabled,
+          'hover:bg-black': !isButtonDisabled,
+          'dark:hover:bg-white': !isButtonDisabled,
+          'cursor-default': isButtonDisabled,
+        }"
         @click="onClick"
       >
-        Envoyer <i class="bx bxs-send ml-2"></i>
+        <i v-if="isWaiting" class="bx bx-loader-alt animate-spin mr-1"></i>
+        <span v-else>Envoyer <i class="bx bxs-send ml-2"></i></span>
       </button>
     </div>
   </div>
@@ -183,9 +188,13 @@ export default Vue.extend<Data, any, any>({
       amountErrorMessage: '',
       stiFees: 0,
       typingTimeout: null,
+      isWaiting: false,
     }
   },
   computed: {
+    isButtonDisabled() {
+      return !this.isToGood || this.amountError || this.amount === ''
+    },
     displayFees() {
       return fees(this.gasPrice.mul(ethers.BigNumber.from(97000)))
     },
@@ -282,6 +291,7 @@ export default Vue.extend<Data, any, any>({
       }
     },
     async onClick() {
+      this.isWaiting = true
       const result: { ok: boolean; error?: { code: number; message: string } } =
         await this.sendTokens({
           to: this.to,
@@ -308,6 +318,8 @@ export default Vue.extend<Data, any, any>({
       this.to = ''
       this.amount = ''
       this.message = ''
+
+      this.isWaiting = false
 
       if (!result.ok) {
         let title = "Une erreur c'est produite"
