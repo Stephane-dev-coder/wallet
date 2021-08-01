@@ -151,8 +151,9 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapActions, mapState } from 'vuex'
-
 import { BigNumber, ethers } from 'ethers'
+import { Block, TransactionReceipt } from '@ethersproject/abstract-provider'
+
 // Disable button if form is not correct !
 // While waiting for signature spin button
 interface Data {
@@ -296,23 +297,37 @@ export default Vue.extend<Data, any, any>({
         await this.sendTokens({
           to: this.to,
           amount: this.getBNAmount,
-          callback:
-            (tx: string) =>
-            (_: string, __: string, ___: BigNumber, event: any) => {
-              if (event.transactionHash === tx) {
-                this.$vs.notification({
-                  position: 'top-right',
-                  color: 'success',
-                  icon: `<i class='bx bxs-check-circle' ></i>`,
-                  duration: 5000,
-                  title: 'Transaction effectuer !',
-                  text: 'Votre est argent a etait envoyer !',
-                })
+          callback: (tx: string) => async (block: Block) => {
+            const provider = (await this.getProvider()).provider
+            for (let i = 0; i < block.transactions.length; i++) {
+              const transaction = block.transactions[i]
+              if (transaction === tx) {
+                const transactionInfo: TransactionReceipt =
+                  await provider.getTransactionReceipt(transaction)
+                if (transactionInfo.status === 1) {
+                  this.$vs.notification({
+                    position: 'top-right',
+                    color: 'success',
+                    icon: `<i class='bx bxs-check-circle' ></i>`,
+                    duration: 5000,
+                    title: 'Transaction effectuer !',
+                    text: 'Votre est argent a etait envoyer !',
+                  })
+                } else {
+                  this.$vs.notification({
+                    position: 'top-right',
+                    color: 'danger',
+                    icon: `<i class='bx bxs-error-circle'></i>`,
+                    duration: 5000,
+                    title: 'Transaction Fail !',
+                    text: `La transaction n'a pas fonctionner vous pouvez avoir plus de details sur https://polygonscan.com/tx/${tx}`,
+                  })
+                }
                 return true
-              } else {
-                return false
               }
-            },
+            }
+            return false
+          },
         })
 
       this.to = ''
@@ -361,7 +376,7 @@ export default Vue.extend<Data, any, any>({
         })
       }
     },
-    ...mapActions('wallet', ['sendTokens', 'getTokenFees']),
+    ...mapActions('wallet', ['sendTokens', 'getTokenFees', 'getProvider']),
   },
 })
 </script>

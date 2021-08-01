@@ -1,4 +1,5 @@
 import { BigNumber, ethers } from 'ethers'
+import { Block } from '@ethersproject/abstract-provider'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import MetaMask from './wallet/metamask'
 import ContractAddress from './vars/contracts'
@@ -35,8 +36,10 @@ interface State {
         event: any
       ) => boolean | Promise<boolean>
     >
+    block: Array<(block: Block) => boolean | Promise<boolean>>
   }
   gasPrice: BigNumber
+  actualBlock: number
 }
 
 export const state = (): State => ({
@@ -58,10 +61,12 @@ export const state = (): State => ({
   transactions: [],
   callbacks: {
     transaction: [],
+    block: [],
   },
   gasPrice: ethers.BigNumber.from(2).mul(
     ethers.BigNumber.from(10).pow(ethers.BigNumber.from(9))
   ),
+  actualBlock: 0,
 })
 
 export type RootState = ReturnType<typeof state>
@@ -114,6 +119,9 @@ export const mutations: MutationTree<RootState> = {
       case 'transaction':
         state.callbacks.transaction.push(callback.fun)
         break
+      case 'block':
+        state.callbacks.block.push(callback.fun)
+        break
     }
   },
   setCallback(state, callbacks) {
@@ -121,7 +129,13 @@ export const mutations: MutationTree<RootState> = {
       case 'transaction':
         state.callbacks.transaction = callbacks.funs
         break
+      case 'block':
+        state.callbacks.block = callbacks.funs
+        break
     }
+  },
+  setBlock(state, blockNumber) {
+    state.actualBlock = blockNumber
   },
 }
 
@@ -173,8 +187,11 @@ export const actions: ActionTree<RootState, RootState> = {
       return ethers.BigNumber.from(0)
     }
   },
-  async getTokenFees({ state }, amount: BigNumber): Promise<BigNumber> {
-    const provider = await MetaMask.getProvider()
+  async getTokenFees(
+    { state, dispatch },
+    amount: BigNumber
+  ): Promise<BigNumber> {
+    const provider = await dispatch('getProvider')
     if (provider.ok && provider.provider) {
       const tokenInstance = new ethers.Contract(
         ContractAddress.token,
@@ -188,9 +205,12 @@ export const actions: ActionTree<RootState, RootState> = {
     }
   },
   async getWalletInfos({ commit, dispatch, state }) {
-    const provider = await MetaMask.getProvider()
+    const provider = await dispatch('getProvider')
     if (provider.ok === true && provider.provider) {
       const theProvider = provider.provider
+
+      commit('setBlock', await theProvider.getBlockNumber())
+
       const tokenInstance = new ethers.Contract(
         ContractAddress.token,
         tokenAbi,
@@ -204,6 +224,29 @@ export const actions: ActionTree<RootState, RootState> = {
           async (fun) => await !fun(from, to, amount, event)
         )
         commit('setCallback', { type: 'transaction', funs: callbacks })
+      })
+      theProvider.on('didPoll', async () => {
+        const newBlock = await theProvider.getBlockNumber()
+
+        if (newBlock > state.actualBlock) {
+          const diff = newBlock - state.actualBlock
+          if (diff > 1) {
+            const num = diff - 1
+            for (let i = 1; i <= num; i++) {
+              const block = await theProvider.getBlock(state.actualBlock + i)
+              const callbacks = state.callbacks.block.filter(
+                async (fun) => await !fun(block)
+              )
+              commit('setCallback', { type: 'block', funs: callbacks })
+            }
+          }
+          commit('setBlock', newBlock)
+          const block = await theProvider.getBlock(newBlock)
+          const callbacks = state.callbacks.block.filter(
+            async (fun) => await !fun(block)
+          )
+          commit('setCallback', { type: 'block', funs: callbacks })
+        }
       })
       commit('setBalance', await dispatch('getTokenBalance'))
     }
@@ -233,8 +276,13 @@ export const actions: ActionTree<RootState, RootState> = {
       change: 0,
     })
   },
+  async getProvider() {
+    // Depend du wallet choisi !
+    return await MetaMask.getProvider()
+  },
+
   async sendTokens(
-    { state, commit },
+    { state, commit, dispatch },
     {
       to,
       amount,
@@ -244,17 +292,10 @@ export const actions: ActionTree<RootState, RootState> = {
     }: {
       to: string
       amount: BigNumber
-      callback: (
-        tx: string
-      ) => (
-        from: string,
-        to: string,
-        amount: BigNumber,
-        event: any
-      ) => boolean | Promise<boolean>
+      callback: (tx: string) => (block: Block) => boolean | Promise<boolean>
     }
   ) {
-    const provider = await MetaMask.getProvider()
+    const provider = await dispatch('getProvider')
     if (provider.ok === true && provider.provider) {
       const theProvider = provider.provider
       const tokenInstance = new ethers.Contract(
@@ -268,7 +309,7 @@ export const actions: ActionTree<RootState, RootState> = {
           from: state.address,
         })
         commit('addCallback', {
-          type: 'transaction',
+          type: 'block',
           fun: callback(result.hash),
         })
         return {
