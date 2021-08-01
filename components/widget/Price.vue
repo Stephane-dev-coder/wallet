@@ -11,7 +11,7 @@
       "
     >
       Prix
-      <span class="text-sm text-gray-400 dark:text-gray-600">24H</span>
+      <!-- <span class="text-sm text-gray-400 dark:text-gray-600">24H</span> -->
     </h3>
     <div
       class="
@@ -24,10 +24,8 @@
         dark:text-white
       "
     >
-      <div>
-        {{ price.value.toFixed(10) }}$ = 1
-        <span class="text-blue-500">STI</span>
-      </div>
+      <div>{{ price.value.toFixed(10) }} $</div>
+      <!--
       <span
         class="text-xs ml-1"
         :class="{
@@ -37,6 +35,7 @@
         >({{ price.change >= 0 ? '+' : ''
         }}{{ price.change.toFixed(1) }}%)</span
       >
+      -->
     </div>
   </div>
 </template>

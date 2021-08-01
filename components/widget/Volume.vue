@@ -11,7 +11,7 @@
       "
     >
       Volume
-      <span class="text-sm text-gray-400 dark:text-gray-600">24H</span>
+      <!-- <span class="text-sm text-gray-400 dark:text-gray-600">24H</span> -->
     </h3>
     <p
       class="
@@ -24,7 +24,8 @@
       "
     >
       {{ volume.value.toFixed(2) }} $
-      <span
+      <!--
+        <span
         class="text-xs ml-1"
         :class="{
           'text-green-500': volume.change >= 0,
@@ -33,6 +34,7 @@
         >({{ volume.change >= 0 ? '+' : ''
         }}{{ volume.change.toFixed(1) }}%)</span
       >
+      -->
     </p>
   </div>
 </template>

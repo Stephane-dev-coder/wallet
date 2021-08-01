@@ -1,7 +1,8 @@
-import { BigNumber, ethers } from 'ethers'
+import { BigNumber, Contract, ethers } from 'ethers'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import MetaMask from './wallet/metamask'
 import ContractAddress from './vars/contracts'
+import hosts from './vars/api'
 
 const tokenAbi = [
   'function balanceOf(address account) public view override returns (uint256)',
@@ -207,25 +208,30 @@ export const actions: ActionTree<RootState, RootState> = {
       commit('setBalance', await dispatch('getTokenBalance'))
     }
 
-    setTimeout(() => {
-      commit('setEarned', 200000 * Math.random() - 100000 * Math.random())
-    }, Math.floor(Math.random() * 5000))
+    const result = await this.$axios.$get(
+      `${hosts.node}/user/${state.address}/profit`
+    )
+
+    commit('setEarned', parseFloat(result.data))
   },
-  getGlobalInfos({ commit }) {
-    setTimeout(() => {
-      const positive = Math.random() > 0.5 ? 1 : -1
-      commit('setPrice', {
-        value: 0.01 * Math.random(),
-        change: positive * 100 * Math.random(),
-      })
-    }, Math.floor(Math.random() * 1000))
-    setTimeout(() => {
-      const positive = Math.random() > 0.5 ? 1 : -1
-      commit('setVolume', {
-        value: 1_000_000 * Math.random(),
-        change: positive * 100 * Math.random(),
-      })
-    }, Math.floor(Math.random() * 1000))
+  async getGlobalInfos({ commit }) {
+    const pair = await this.$axios.$get(
+      'https://api2.sushipro.io/?chainID=137&action=get_pair&pair=' +
+        ContractAddress.tokenPair
+    )
+    const priceSTI = pair[0].Token_2_price
+
+    commit('setPrice', {
+      value: priceSTI,
+      change: 0,
+    })
+
+    const volumes = await this.$axios.$get(`${hosts.node}/global/volume`)
+
+    commit('setVolume', {
+      value: volumes.data.fiat,
+      change: 0,
+    })
   },
   async sendTokens(
     { state, commit },
