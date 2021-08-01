@@ -25,7 +25,7 @@
       Envoyer
     </h3>
     <div class="grid grid-cols-2 gap-3 mt-6">
-      <div class="flex flex-col">
+      <div class="flex flex-col col-span-2 lg:col-span-1">
         <span class="text-sm text-gray-500">Destinataire </span>
         <input
           v-model="to"
@@ -48,7 +48,7 @@
           L'adresse est incorrect
         </p>
       </div>
-      <div class="flex flex-col">
+      <div class="flex flex-col col-span-2 lg:col-span-1">
         <span class="text-sm text-gray-500">Montant </span>
         <input
           v-model.number="amount"
@@ -186,7 +186,7 @@ export default Vue.extend<Data, any, any>({
       amount: '',
       message: '',
       amountError: false,
-      amountErrorMessage: '',
+      amountErrorMessage: 'x',
       stiFees: 0,
       typingTimeout: null,
       isWaiting: false,

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-20 w-full relative">
+  <div class="h-40 lg:h-20 w-full relative">
     <textarea
       class="
         dark:bg-dark-4
