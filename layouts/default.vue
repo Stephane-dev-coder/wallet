@@ -94,7 +94,7 @@
             text-lg
             dark:bg-dark-24 dark:text-gray-200
             w-full
-            lg:w-2/3
+            lg:w-1/3
             p-6
             rounded-xl
             flex flex-col
@@ -102,6 +102,7 @@
         >
           <div class="flex justify-between">
             Preferences
+            <!-- Bon ouai on rajoutera des trucs plus tard -->
             <button
               class="
                 flex
@@ -130,8 +131,44 @@
               Sortir <i class="bx bx-right-arrow-alt ml-2"></i>
             </button>
           </div>
-          <div>
-            <!-- Layout de parametres -->
+          <div class="flex justify-center">
+            <button
+              class="
+                mt-4
+                bg-white
+                dark:bg-dark-24
+                text-black
+                dark:text-white
+                border-2 border-black
+                dark:border-white
+                px-5
+                py-2
+                text-sm
+                rounded-lg
+                transition
+                duration-300
+                ring-offset-2
+                hover:text-white
+                dark:hover:text-black
+                hover:border-black
+                dark:hover:border-white
+                hover:bg-black
+                dark:hover:bg-white
+                focus:text-white
+                dark:focus:text-black
+                focus:bg-black
+                dark:focus:bg-white
+                focus:border-black
+                dark:focus:border-white
+                focus:ring focus:ring-black
+                dark:focus:ring-white
+                focus:outline-none
+                dark:ring-offset-black
+              "
+              @click="clickDisconnect()"
+            >
+              se deconnecter
+            </button>
           </div>
         </div>
       </div>
@@ -221,11 +258,19 @@ export default Vue.extend<any, any, any, any>({
     clickConnect() {
       this.connectModal = true
     },
+    clickDisconnect() {
+      this.disconnectWallet()
+      this.userModal = false
+    },
     clickUser() {
       this.userModal = true
     },
     ...mapMutations('app', ['setDark', 'setLight']),
-    ...mapActions('wallet', ['connectWallet', 'getGlobalInfos']),
+    ...mapActions('wallet', [
+      'connectWallet',
+      'getGlobalInfos',
+      'disconnectWallet',
+    ]),
   },
 })
 </script>

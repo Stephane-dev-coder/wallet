@@ -144,6 +144,10 @@ export const actions: ActionTree<RootState, RootState> = {
       }
     }
   },
+  disconnectWallet({ commit }) {
+    commit('logout')
+    commit('setWallet', '')
+  },
   async connectWallet({ commit, state, dispatch }) {
     const wallet = state.walletUsed
     switch (wallet) {
