@@ -46,16 +46,18 @@
       -->
     </h3>
     <div class="flex flex-row mt-6 overflow-x-auto">
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
-      <WidgetAppstoreItem class="mr-4" />
+      <WidgetAppstoreItemWebsite
+        to="https://www.cbetwallet.tk/"
+        image="/tracker.png"
+        name="Wallet Tracker"
+        class="mr-4"
+      />
+      <WidgetAppstoreItemWebsite
+        to="/stats"
+        image="/stats.png"
+        name="Statistiques"
+        class="mr-4"
+      />
       <!--
         Le jour ou on aura vraimnent beaucoup d'app !
         <div class="flex flex-col items-center w-32">
