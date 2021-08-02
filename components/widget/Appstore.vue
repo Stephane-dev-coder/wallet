@@ -52,7 +52,7 @@
         name="Wallet Tracker"
         class="mr-4"
       />
-      <WidgetAppstoreItemWebsite
+      <WidgetAppstoreItemLink
         to="/stats"
         image="/stats.png"
         name="Statistiques"
