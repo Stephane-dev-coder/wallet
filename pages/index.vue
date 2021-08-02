@@ -11,7 +11,7 @@
       <WidgetEarned />
       <WidgetPrice />
       <WidgetVolume />
-      <WidgetNews />
+      <!-- <WidgetNews /> pour plus tard -->
       <WidgetSend v-if="isConnected" />
       <WidgetSendBlured v-else />
       <WidgetReceive v-if="isConnected" />

@@ -14,7 +14,9 @@
   >
     <h3 class="text-lg flex justify-between items-center dark:text-gray-400">
       <div><span class="line-through">App</span> STI Store</div>
-      <NuxtLink
+      <!--
+        Le jours ou y'aura plus de 2 app enfaite
+        <NuxtLink
         to="/store"
         class="
           flex
@@ -41,6 +43,7 @@
       >
         Decouvrir <i class="bx bx-right-arrow-alt ml-2"></i>
       </NuxtLink>
+      -->
     </h3>
     <div class="flex flex-row mt-6 overflow-x-auto">
       <WidgetAppstoreItem class="mr-4" />
@@ -53,7 +56,9 @@
       <WidgetAppstoreItem class="mr-4" />
       <WidgetAppstoreItem class="mr-4" />
       <WidgetAppstoreItem class="mr-4" />
-      <div class="flex flex-col items-center w-32">
+      <!--
+        Le jour ou on aura vraimnent beaucoup d'app !
+        <div class="flex flex-col items-center w-32">
         <div
           class="
             flex
@@ -75,6 +80,7 @@
         </div>
         <span class="text-xs mt-4 dark:text-white">et plus encore</span>
       </div>
+      -->
     </div>
   </div>
 </template>
