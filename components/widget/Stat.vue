@@ -1,5 +1,16 @@
 <template>
-  <div class="bg-white dark:bg-dark-1 shadow-lg rounded-lg p-4 flex flex-col">
+  <div
+    class="
+      bg-white
+      dark:bg-dark-1
+      shadow-lg
+      rounded-lg
+      p-4
+      flex flex-col
+      col-span-1
+    "
+    :class="classSpan"
+  >
     <h3
       class="
         text-lg
@@ -33,12 +44,21 @@ export default Vue.extend({
       required: true,
     },
     value: {
-      type: String,
+      type: [String, Number],
       default: '',
     },
     today: {
       type: Boolean,
       default: false,
+    },
+    span: {
+      type: Number,
+      default: 1,
+    },
+  },
+  computed: {
+    classSpan() {
+      return 'lg:col-span-' + this.span
     },
   },
 })

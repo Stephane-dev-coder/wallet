@@ -23,7 +23,7 @@
         dark:text-white
       "
     >
-      {{ volume.value.toFixed(2) }} $
+      {{ calculatedVolume.toFixed(2) }} $
       <!--
         <span
         class="text-xs ml-1"
@@ -49,7 +49,10 @@ import { mapState } from 'vuex'
 
 export default Vue.extend({
   computed: {
-    ...mapState('wallet', ['volume']),
+    calculatedVolume() {
+      return parseInt(this.volume) * parseFloat(this.price)
+    },
+    ...mapState('statistiques', ['volume', 'price']),
   },
 })
 </script>

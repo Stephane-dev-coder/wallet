@@ -15,7 +15,7 @@
         relative
         dark:text-gray-200
       "
-      maxlength="240"
+      maxlength="256"
       placeholder="Merci pour l'extincteur !"
       type="text"
       :value="value"
@@ -37,7 +37,7 @@
       "
       :class="{ 'ring-2': error, 'ring-red-400': error }"
     >
-      {{ size }}/240
+      {{ size }}/256
     </div>
     <p class="text-xs text-red-500 mt-1" :class="{ invisible: !error }">
       {{ message }}

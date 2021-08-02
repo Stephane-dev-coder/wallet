@@ -23,10 +23,6 @@ interface State {
     value: number
     change: number
   }
-  volume: {
-    value: number
-    change: number
-  }
   transactions: Array<{ from: string; to: string; amount: BigNumber }>
   callbacks: {
     transaction: Array<
@@ -52,10 +48,6 @@ export const state = (): State => ({
   balance: null,
   earned: null,
   price: {
-    value: 0,
-    change: 0,
-  },
-  volume: {
     value: 0,
     change: 0,
   },
@@ -100,9 +92,6 @@ export const mutations: MutationTree<RootState> = {
   },
   setPrice(state, price) {
     state.price = price
-  },
-  setVolume(state, volume) {
-    state.volume = volume
   },
   login(state, address) {
     state.isConnected = true
@@ -220,6 +209,11 @@ export const actions: ActionTree<RootState, RootState> = {
 
       tokenInstance.on('Transfer', async (from, to, amount, event) => {
         commit('setBalance', await dispatch('getTokenBalance'))
+        const result = await this.$axios.$get(
+          `${hosts.node}/user/${state.address}/profit`
+        )
+
+        commit('setEarned', parseFloat(result.data))
         commit('addTransaction', { from, to, amount })
         const callbacks = state.callbacks.transaction.filter(
           async (fun) => await !fun(from, to, amount, event)
@@ -267,13 +261,6 @@ export const actions: ActionTree<RootState, RootState> = {
 
     commit('setPrice', {
       value: priceSTI,
-      change: 0,
-    })
-
-    const volumes = await this.$axios.$get(`${hosts.node}/global/volume`)
-
-    commit('setVolume', {
-      value: volumes.data.fiat,
       change: 0,
     })
   },
