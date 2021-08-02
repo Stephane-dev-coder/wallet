@@ -18,7 +18,7 @@
       maxlength="240"
       placeholder="Merci pour l'extincteur !"
       type="text"
-      :value="content"
+      :value="value"
       @input="handleInput"
     />
     <div
@@ -48,11 +48,7 @@
 <script lang="ts">
 import Vue from 'vue'
 
-interface Data {
-  content: string
-}
-
-export default Vue.extend<Data, any, any, any>({
+export default Vue.extend<any, any, any, any>({
   props: {
     value: {
       type: String,
@@ -61,19 +57,17 @@ export default Vue.extend<Data, any, any, any>({
   },
   data() {
     return {
-      content: this.value,
       error: false,
       message: '',
     }
   },
   computed: {
     size() {
-      return this.content.length
+      return this.value.length
     },
   },
   methods: {
     handleInput(e: any) {
-      this.content = e.target.value
       this.$emit('input', e.target.value)
     },
   },

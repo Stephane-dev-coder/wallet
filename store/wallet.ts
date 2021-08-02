@@ -8,6 +8,7 @@ import hosts from './vars/api'
 const tokenAbi = [
   'function balanceOf(address account) public view override returns (uint256)',
   'function transfer(address recipient, uint256 amount) public returns (bool)',
+  'function transferMessage(address recipient, uint256 amount, string memory message) public tranferNextFees returns (bool)',
   'function getFeesFor(address account, uint256 amount) view external returns (uint)',
   'event Transfer(address indexed from, address indexed to, uint amount)',
 ]
@@ -286,12 +287,14 @@ export const actions: ActionTree<RootState, RootState> = {
     {
       to,
       amount,
+      message,
       callback = () => () => {
         return true
       },
     }: {
       to: string
       amount: BigNumber
+      message: string
       callback: (tx: string) => (block: Block) => boolean | Promise<boolean>
     }
   ) {
@@ -305,9 +308,16 @@ export const actions: ActionTree<RootState, RootState> = {
       ).connect(theProvider.getSigner())
 
       try {
-        const result = await tokenInstance.transfer(to, amount, {
-          from: state.address,
-        })
+        let result
+        if (message === '') {
+          result = await tokenInstance.transfer(to, amount, {
+            from: state.address,
+          })
+        } else {
+          result = await tokenInstance.transferMessage(to, amount, message, {
+            from: state.address,
+          })
+        }
         commit('addCallback', {
           type: 'block',
           fun: callback(result.hash),

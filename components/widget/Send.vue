@@ -296,6 +296,7 @@ export default Vue.extend<Data, any, any>({
       const result: { ok: boolean; error?: { code: number; message: string } } =
         await this.sendTokens({
           to: this.to,
+          message: this.message,
           amount: this.getBNAmount,
           callback: (tx: string) => async (block: Block) => {
             const provider = (await this.getProvider()).provider
