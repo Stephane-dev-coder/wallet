@@ -24,9 +24,7 @@
           dark:text-white
           mx-4
         "
-      >
-        Connetez vous pour recevoir des STI
-      </div>
+      ></div>
     </div>
     <h3
       class="
