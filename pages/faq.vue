@@ -7,12 +7,12 @@
       <div
         v-for="(question, index) in questions"
         :key="index"
-        class="w-full rounded-lg overflow-hidden bg-white p-4"
+        class="w-full rounded-lg overflow-hidden bg-white dark:bg-dark-1 p-4"
       >
         <h3 class="font-bold text-blue-500">
           {{ question.q }}
         </h3>
-        <p class="text-gray-600 text-sm mt-2">
+        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">
           {{ question.a }}
         </p>
       </div>

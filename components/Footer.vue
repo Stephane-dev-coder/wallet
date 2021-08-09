@@ -85,6 +85,7 @@
       <h3 class="text-blue-500 text-lg font-bold">Newsletter</h3>
       <div class="flex mt-4">
         <input
+          v-model="newsletter"
           type="text"
           class="
             flex-grow
@@ -214,6 +215,7 @@ export default {
           internal: true,
         },
       ],
+      newsletter: 'tkt rajoute ton email',
     }
   },
 }

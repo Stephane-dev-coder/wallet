@@ -12,6 +12,7 @@
           rounded-lg
           overflow-hidden
           bg-white
+          dark:bg-dark-1
           shadow-lg
           transition
           duration-500
@@ -22,16 +23,16 @@
         @click="watch(video.url)"
       >
         <img class="w-full object-cover" :src="video.tumbnail" alt="" />
-        <div class="flex flex-col p-2">
+        <div class="flex flex-col p-3">
           <div class="flex justify-between items-center">
-            <h3 class="text-sm">{{ video.title }}</h3>
+            <h3 class="text-sm dark:text-gray-200">{{ video.title }}</h3>
             <div
               class="
                 flex
                 items-center
                 rounded-full
-                bg-green-100
-                text-green-500 text-xs
+                bg-blue-100
+                text-blue-500 text-xs
                 font-bold
                 px-2
                 py-1
@@ -41,7 +42,7 @@
               <i class="ml-2 bx bxs-time-five"></i>
             </div>
           </div>
-          <p class="text-xs text-gray-600 mt-4">
+          <p class="text-xs text-gray-600 mt-4 dark:text-gray-400">
             {{ video.description }}
           </p>
         </div>
