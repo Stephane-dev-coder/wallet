@@ -154,14 +154,6 @@ import { mapActions, mapState } from 'vuex'
 import { BigNumber, ethers } from 'ethers'
 import { Block, TransactionReceipt } from '@ethersproject/abstract-provider'
 
-// Disable button if form is not correct !
-// While waiting for signature spin button
-interface Data {
-  to: string
-  amount: string
-  message: string
-}
-
 const fees = (value: BigNumber, fixedTo = 6) => {
   const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
   let price = value
@@ -179,7 +171,7 @@ const fees = (value: BigNumber, fixedTo = 6) => {
   }
 }
 
-export default Vue.extend<Data, any, any>({
+export default Vue.extend<any, any, any>({
   data() {
     return {
       to: '',

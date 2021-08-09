@@ -99,7 +99,7 @@
         />
         <button
           class="
-            ml-2
+            ml-4
             bg-white
             dark:bg-nice-dark
             text-black
@@ -178,8 +178,8 @@ export default {
         {
           title: 'Whitepaper V1',
           icon: 'bx bx-file',
-          url: '/whitepaper/v1',
-          internal: true,
+          url: '/whitepaper/v1.pdf',
+          internal: false,
         },
         {
           title: 'Tutoriels',
