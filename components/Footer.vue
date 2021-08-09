@@ -212,8 +212,8 @@ export default {
         {
           title: 'Token Information',
           icon: 'bx bxs-coin',
-          url: '/token',
-          internal: true,
+          url: '/token/v1.pdf',
+          internal: false,
         },
       ],
       newsletter: 'tkt rajoute ton email',
