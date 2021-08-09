@@ -86,6 +86,7 @@
       <div class="flex mt-4">
         <input
           v-model="newsletter"
+          placeholder="tkt rajoute ton email"
           type="text"
           class="
             flex-grow
@@ -199,11 +200,11 @@ export default {
         {
           title: 'Communauté',
           icon: 'bx bxs-group',
-          url: '/about/community',
+          url: '/community',
           internal: true,
         },
         {
-          title: 'Developers',
+          title: 'Team',
           icon: 'bx bx-laptop',
           url: '/devs',
           internal: true,
