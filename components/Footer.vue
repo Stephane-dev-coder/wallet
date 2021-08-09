@@ -156,13 +156,13 @@ export default {
           internal: false,
         },
         {
-          title: 'Tik Tok',
+          title: 'TikTok',
           icon: 'bx bxl-tiktok',
           url: 'https://www.tiktok.com/fr/',
           internal: false,
         },
         {
-          title: 'Snap Chat',
+          title: 'SnapChat',
           icon: 'bx bxl-snapchat',
           url: 'https://www.snapchat.com/',
           internal: false,
