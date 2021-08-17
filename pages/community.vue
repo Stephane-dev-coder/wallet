@@ -13,7 +13,16 @@
         mt-10
       "
     >
-      <div class="flex flex-col items-center p-4 dark:bg-dark-1 rounded-lg">
+      <div
+        class="
+          flex flex-col
+          items-center
+          p-4
+          dark:bg-dark-1
+          rounded-lg
+          bg-white
+        "
+      >
         <div class="flex justify-start w-full h-8 items-center">
           <h4 class="text-2xl font-bold text-yellow-500">#1</h4>
         </div>
@@ -39,7 +48,16 @@
           <div class="text-blue-500">50%</div>
         </div>
       </div>
-      <div class="flex flex-col items-center p-4 dark:bg-dark-1 rounded-lg">
+      <div
+        class="
+          flex flex-col
+          items-center
+          p-4
+          dark:bg-dark-1
+          rounded-lg
+          bg-white
+        "
+      >
         <div class="flex justify-start w-full h-8 items-center">
           <h4 class="text-xl font-bold text-gray-500">#2</h4>
         </div>
@@ -65,7 +83,16 @@
           <div class="text-blue-500">50%</div>
         </div>
       </div>
-      <div class="flex flex-col items-center p-4 dark:bg-dark-1 rounded-lg">
+      <div
+        class="
+          flex flex-col
+          items-center
+          p-4
+          dark:bg-dark-1
+          rounded-lg
+          bg-white
+        "
+      >
         <div class="flex justify-start w-full h-8 items-center">
           <h4 class="text-lg font-bold text-yellow-900">#3</h4>
         </div>
@@ -92,7 +119,16 @@
         </div>
       </div>
 
-      <div class="flex flex-col items-center p-4 dark:bg-dark-1 rounded-lg">
+      <div
+        class="
+          flex flex-col
+          items-center
+          p-4
+          dark:bg-dark-1
+          rounded-lg
+          bg-white
+        "
+      >
         <div class="flex justify-start w-full h-8 items-center">
           <h4 class="text-base font-bold dark:text-white">#4</h4>
         </div>

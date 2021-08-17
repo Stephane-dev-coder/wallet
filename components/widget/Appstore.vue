@@ -13,7 +13,7 @@
     "
   >
     <h3 class="text-lg flex justify-between items-center dark:text-gray-400">
-      <div><span class="line-through">App</span> STI Store</div>
+      <div>STI Store</div>
       <!--
         Le jours ou y'aura plus de 2 app enfaite
         <NuxtLink

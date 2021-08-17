@@ -31,15 +31,29 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapState } from 'vuex'
-import { ethers } from 'ethers'
+import { ethers, BigNumber } from 'ethers'
+
+const fees = (value: BigNumber, fixedTo = 6) => {
+  const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
+  let price = value
+    .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(puissance)))
+    .toString()
+  if (price.length < fixedTo || price.length === fixedTo) {
+    const diff = fixedTo - price.length
+    for (let i = 0; i < diff; i++) {
+      price = `0${price}`
+    }
+    return `0.${price}`
+  } else {
+    const diff = price.length - fixedTo
+    return `${price.substring(0, diff)}.${price.substring(diff)}`
+  }
+}
 
 export default Vue.extend({
   computed: {
     displayBalance() {
-      const balance = this.balance
-        .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(12)))
-        .toString()
-      return `${balance.substring(0, 2)}.${balance.substring(2)}`
+      return `${fees(this.balance)}`
     },
     ...mapState('wallet', ['isConnected', 'balance']),
   },

@@ -71,42 +71,117 @@
       <div class="flex justify-center bg-white shadow-xl p-2 rounded-xl mt-4">
         <img :src="retrieveQrCode()" alt="" />
       </div>
-      <button
-        class="
-          mt-6
-          bg-white
-          dark:bg-nice-dark
-          text-black
-          dark:text-white
-          border-2 border-black
-          dark:border-white
-          px-5
-          py-2
-          text-sm
-          rounded-lg
-          transition
-          duration-300
-          ring-offset-2
-          hover:text-white
-          dark:hover:text-black
-          hover:border-black
-          dark:hover:border-white
-          hover:bg-black
-          dark:hover:bg-white
-          focus:text-white
-          dark:focus:text-black
-          focus:bg-black
-          dark:focus:bg-white
-          focus:border-black
-          dark:focus:border-white
-          focus:ring focus:ring-black
-          dark:focus:ring-white
-          focus:outline-none
-          dark:ring-offset-black
-        "
+      <vs-tooltip
+        v-model="isSharing"
+        shadow
+        interactivity
+        not-hover
+        color="#FFF"
       >
-        Partager <i class="bx bxs-share-alt ml-2"></i>
-      </button>
+        <button
+          class="
+            mt-6
+            bg-white
+            dark:bg-nice-dark
+            text-black
+            dark:text-white
+            border-2 border-black
+            dark:border-white
+            px-5
+            py-2
+            text-sm
+            rounded-lg
+            transition
+            duration-300
+            ring-offset-2
+            hover:text-white
+            dark:hover:text-black
+            hover:border-black
+            dark:hover:border-white
+            hover:bg-black
+            dark:hover:bg-white
+            focus:text-white
+            dark:focus:text-black
+            focus:bg-black
+            dark:focus:bg-white
+            focus:border-black
+            dark:focus:border-white
+            focus:ring focus:ring-black
+            dark:focus:ring-white
+            focus:outline-none
+            dark:ring-offset-black
+          "
+          @click="isSharing = true"
+          @blur="isSharing = false"
+        >
+          Partager <i class="bx bxs-share-alt ml-2"></i>
+        </button>
+        <template #tooltip>
+          <div class="grid grid-cols-4 gap-2 bg-white p-1">
+            <a
+              class="
+                h-8
+                w-8
+                rounded
+                bg-blue-400
+                flex
+                justify-center
+                items-center
+                text-lg
+              "
+            >
+              <i class="bx bxl-twitter"></i>
+            </a>
+            <a
+              class="
+                h-8
+                w-8
+                rounded
+                bg-gradient-to-br
+                from-yellow-400
+                via-red-500
+                to-pink-500
+                flex
+                justify-center
+                items-center
+                text-lg
+              "
+            >
+              <i class="bx bxl-instagram-alt"></i>
+            </a>
+            <a
+              class="
+                h-8
+                w-8
+                rounded
+                bg-blue-600
+                flex
+                justify-center
+                items-center
+                text-lg
+              "
+            >
+              <i class="bx bxl-facebook"></i>
+            </a>
+            <a
+              href="tg.com"
+              target="_blank"
+              class="
+                h-8
+                w-8
+                rounded
+                bg-yellow-300
+                flex
+                justify-center
+                items-center
+                text-lg
+              "
+            >
+              <i class="bx bxl-snapchat"></i>
+            </a>
+          </div>
+        </template>
+      </vs-tooltip>
     </div>
   </div>
 </template>
@@ -121,6 +196,7 @@ export default Vue.extend({
     return {
       coppied: false,
       qrcode: new Qrious({ size: 200 }),
+      isSharing: false,
     }
   },
   computed: {

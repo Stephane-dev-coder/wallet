@@ -254,6 +254,9 @@ export default Vue.extend<any, any, any>({
       }
     },
     leaveAmountInput() {
+      if (this.amount > 99999999) {
+        this.amount = 99999999
+      }
       if (this.amount !== '') {
         if (this.amount < 0) {
           this.amountError = true
