@@ -11,6 +11,9 @@ Le seule portefeuille qui vous permet d'utiliser les STI à leur plein potentiel
 ### Liens utiles
 
 [F.A.Q](https://google.com/j?ai?pas?encore?le?domaine)
-[Information sur le token](https://google.com/j?ai?pas?encore?le?domaine) 
+
+[Information sur le token](https://google.com/j?ai?pas?encore?le?domaine)
+
 [White Paper](https://google.com/j?ai?pas?encore?le?domaine) 
+
 [Tutoriels](https://google.com/j?ai?pas?encore?le?domaine) 
