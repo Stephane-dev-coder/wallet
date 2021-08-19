@@ -69,7 +69,7 @@ const checkValidity = async (
 }> => {
   if (window.ethereum) {
     const chainId = await window.ethereum.request({ method: 'eth_chainId' })
-    if (chainId !== '0x539') {
+    if (chainId !== '0x13881') {
       listen()
       return {
         ok: false,

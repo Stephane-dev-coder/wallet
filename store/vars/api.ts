@@ -1,3 +1,3 @@
 export default {
-  node: 'http://localhost:8000',
+  node: 'http://51.255.50.182/api',
 }

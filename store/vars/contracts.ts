@@ -1,5 +1,5 @@
 export default {
-  token: '0xac9b9fbbd011Cf11Bf79321174bDaeb66B3725EB',
+  token: '0xcb3a77060A20C39B2549A8f40DcEf5673fff867e',
   tokenPair: '0x186b5f75a75b0f02262ace051f37224148378ad0',
-  random: '0x1a89C2B70485d60d7e6cCd5B222C55967f44eD45',
+  random: '0xC788fEebED353Be19cD151Ec29ec1DD102D6AB69',
 }

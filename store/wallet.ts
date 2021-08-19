@@ -6,9 +6,9 @@ import ContractAddress from './vars/contracts'
 import hosts from './vars/api'
 
 const tokenAbi = [
-  'function balanceOf(address account) public view override returns (uint256)',
+  'function balanceOf(address account) public view returns (uint256)',
   'function transfer(address recipient, uint256 amount) public returns (bool)',
-  'function transferMessage(address recipient, uint256 amount, string memory message) public tranferNextFees returns (bool)',
+  'function transferMessage(address recipient, uint256 amount, string memory message) public returns (bool)',
   'function getFeesFor(address account, uint256 amount) view external returns (uint)',
   'event Transfer(address indexed from, address indexed to, uint amount)',
 ]
@@ -213,11 +213,10 @@ export const actions: ActionTree<RootState, RootState> = {
 
       tokenInstance.on('Transfer', async (from, to, amount, event) => {
         commit('setBalance', await dispatch('getTokenBalance'))
-        const result = await this.$axios.$get(
-          `${hosts.node}/user/${state.address}/profit`
-        )
 
-        commit('setEarned', parseFloat(result.data))
+        // Get Profit here !
+
+        commit('setEarned', 1)
         commit('addTransaction', { from, to, amount })
         const callbacks = state.callbacks.transaction.filter(
           async (fun) => await !fun(from, to, amount, event)
