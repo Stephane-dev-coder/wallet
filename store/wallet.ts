@@ -214,7 +214,7 @@ export const actions: ActionTree<RootState, RootState> = {
         commit('setBalance', await dispatch('getTokenBalance'))
 
         const balanceHistory = await this.$axios.$get(
-          `http://51.255.50.182/api/user/${state.address}/history/balance`
+          `https://51.255.50.182/api/user/${state.address}/history/balance`
         )
         const initBalance = ethers.BigNumber.from(balanceHistory[0].balance)
         const finalBalance = ethers.BigNumber.from(
@@ -256,7 +256,7 @@ export const actions: ActionTree<RootState, RootState> = {
     }
 
     const balanceHistory = await this.$axios.$get(
-      `http://51.255.50.182/api/user/${state.address}/history/balance`
+      `https://51.255.50.182/api/user/${state.address}/history/balance`
     )
     const initBalance = ethers.BigNumber.from(balanceHistory[0].balance)
     const finalBalance = ethers.BigNumber.from(

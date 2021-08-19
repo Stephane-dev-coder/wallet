@@ -44,21 +44,21 @@ export const mutations: MutationTree<RootState> = {
 export const actions: ActionTree<RootState, RootState> = {
   async getStats({ commit }) {
     const pair = await this.$axios.$get(
-      'https://api2.sushipro.io/?chainID=137&action=get_pair&pair=' +
+      'httpss://api2.sushipro.io/?chainID=137&action=get_pair&pair=' +
         contracts.tokenPair
     )
     const priceSTI = pair[0].Token_2_price
 
     const getVolume = await this.$axios.$get(
-      'http://51.255.50.182/api/actual/volume'
+      'https://51.255.50.182/api/actual/volume'
     )
 
     const getTransaction = await this.$axios.$get(
-      'http://51.255.50.182/api/actual/transactions'
+      'https://51.255.50.182/api/actual/transactions'
     )
 
     const getTransacionsTotal = await this.$axios.$get(
-      'http://51.255.50.182/api/actual/transactions',
+      'https://51.255.50.182/api/actual/transactions',
       {
         params: {
           back: 0,
@@ -67,11 +67,11 @@ export const actions: ActionTree<RootState, RootState> = {
     )
 
     const getUsers = await this.$axios.$get(
-      'http://51.255.50.182/api/actual/users'
+      'https://51.255.50.182/api/actual/users'
     )
 
     const getUsersTotal = await this.$axios.$get(
-      'http://51.255.50.182/api/actual/users',
+      'https://51.255.50.182/api/actual/users',
       {
         params: {
           back: 0,

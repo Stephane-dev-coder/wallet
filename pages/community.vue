@@ -76,7 +76,7 @@ import Vue from 'vue'
 
 export default Vue.extend({
   async asyncData({ $axios }) {
-    const rank = await $axios.$get('http://51.255.50.182/api/actual/rank')
+    const rank = await $axios.$get('https://51.255.50.182/api/actual/rank')
     return {
       rank,
     }
