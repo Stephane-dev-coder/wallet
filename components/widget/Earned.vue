@@ -16,9 +16,12 @@
     <p
       v-if="isConnected && earned != null"
       class="font-bold text-lg"
-      :class="{ 'text-green-500': earned >= 0, 'text-red-500': earned < 0 }"
+      :class="{
+        'text-green-500': !earned.isNegative(),
+        'text-red-500': earned.isNegative(),
+      }"
     >
-      {{ earned >= 0 ? '+' : '' }}{{ earned }}
+      {{ earned.isNegative() ? '-' : '+' }}{{ displayEarned }}
       <span class="text-blue-500">STI</span>
     </p>
 
@@ -35,9 +38,30 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapState } from 'vuex'
+import { ethers, BigNumber } from 'ethers'
+
+const fees = (value: BigNumber, fixedTo = 6) => {
+  const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
+  let price = value
+    .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(puissance)))
+    .toString()
+  if (price.length < fixedTo || price.length === fixedTo) {
+    const diff = fixedTo - price.length
+    for (let i = 0; i < diff; i++) {
+      price = `0${price}`
+    }
+    return `0.${price}`
+  } else {
+    const diff = price.length - fixedTo
+    return `${price.substring(0, diff)}.${price.substring(diff)}`
+  }
+}
 
 export default Vue.extend({
   computed: {
+    displayEarned() {
+      return fees(this.earned)
+    },
     ...mapState('wallet', ['isConnected', 'earned']),
   },
 })

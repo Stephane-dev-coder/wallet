@@ -3,7 +3,6 @@ import { Block } from '@ethersproject/abstract-provider'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import MetaMask from './wallet/metamask'
 import ContractAddress from './vars/contracts'
-import hosts from './vars/api'
 
 const tokenAbi = [
   'function balanceOf(address account) public view returns (uint256)',
@@ -18,7 +17,7 @@ interface State {
   walletUsed: string | null
   address: string
   balance: null | BigNumber
-  earned: null | number
+  earned: null | BigNumber
   price: {
     value: number
     change: number
@@ -214,9 +213,16 @@ export const actions: ActionTree<RootState, RootState> = {
       tokenInstance.on('Transfer', async (from, to, amount, event) => {
         commit('setBalance', await dispatch('getTokenBalance'))
 
-        // Get Profit here !
+        const balanceHistory = await this.$axios.$get(
+          `http://51.255.50.182/api/user/${state.address}/history/balance`
+        )
+        const initBalance = ethers.BigNumber.from(balanceHistory[0].balance)
+        const finalBalance = ethers.BigNumber.from(
+          balanceHistory[balanceHistory.length - 1].balance
+        )
+        const result = finalBalance.sub(initBalance)
 
-        commit('setEarned', 1)
+        commit('setEarned', result)
         commit('addTransaction', { from, to, amount })
         const callbacks = state.callbacks.transaction.filter(
           async (fun) => await !fun(from, to, amount, event)
@@ -249,11 +255,16 @@ export const actions: ActionTree<RootState, RootState> = {
       commit('setBalance', await dispatch('getTokenBalance'))
     }
 
-    const result = await this.$axios.$get(
-      `${hosts.node}/user/${state.address}/profit`
+    const balanceHistory = await this.$axios.$get(
+      `http://51.255.50.182/api/user/${state.address}/history/balance`
     )
+    const initBalance = ethers.BigNumber.from(balanceHistory[0].balance)
+    const finalBalance = ethers.BigNumber.from(
+      balanceHistory[balanceHistory.length - 1].balance
+    )
+    const result = finalBalance.sub(initBalance)
 
-    commit('setEarned', parseFloat(result.data))
+    commit('setEarned', result)
   },
   async getGlobalInfos({ commit }) {
     const pair = await this.$axios.$get(

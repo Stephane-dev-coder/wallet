@@ -13,17 +13,6 @@
       <WidgetStat name="Transactions Total" :value="transactions.total + ''" />
       <WidgetStat name="Utilisateurs" :value="users.today + ''" today />
       <WidgetStat name="Utilisateurs Total" :value="users.total + ''" />
-      <WidgetStat
-        name="Frais Payer"
-        :value="fees.today + ' STI'"
-        today
-        :span="2"
-      />
-      <WidgetStat
-        name="Frais Payer Total"
-        :value="fees.total + ' STI'"
-        :span="2"
-      />
     </div>
   </div>
 </template>
