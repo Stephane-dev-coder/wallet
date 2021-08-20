@@ -241,6 +241,16 @@ export default Vue.extend<any, any, any>({
         this.typingTimeout = setTimeout(async () => {
           this.typingTimeout = null
           const result = await this.getTokenFees(this.getBNAmount)
+          if (result._hex === '-0x01') {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'danger',
+              icon: `<i class='bx bxs-error-circle'></i>`,
+              duration: 10000,
+              title: 'Frais Invalide',
+              text: "Le serveur RPC a eu une erreur et n'a pas retourner la bonnne valeur veuiller attendre une petite minute et relance le site",
+            })
+          }
           this.stiFees = fees(result)
         }, 1000)
       } else {
@@ -248,6 +258,16 @@ export default Vue.extend<any, any, any>({
         this.typingTimeout = setTimeout(async () => {
           this.typingTimeout = null
           const result = await this.getTokenFees(this.getBNAmount)
+          if (result._hex === '-0x01') {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'danger',
+              icon: `<i class='bx bxs-error-circle'></i>`,
+              duration: 10000,
+              title: 'Frais Invalide',
+              text: "Le serveur RPC a eu une erreur et n'a pas retourner la bonnne valeur veuiller attendre une petite minute et relance le site",
+            })
+          }
           this.stiFees = fees(result)
         }, 1000)
       }

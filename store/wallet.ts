@@ -183,7 +183,11 @@ export const actions: ActionTree<RootState, RootState> = {
         provider.provider
       )
 
-      return await tokenInstance.getFeesFor(state.address, amount)
+      try {
+        return await tokenInstance.getFeesFor(state.address, amount)
+      } catch (error) {
+        return ethers.BigNumber.from(-1)
+      }
     } else {
       return ethers.BigNumber.from(0)
     }
