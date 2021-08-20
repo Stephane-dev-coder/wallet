@@ -21,7 +21,7 @@
         'text-red-500': earned.isNegative(),
       }"
     >
-      {{ earned.isNegative() ? '-' : '+' }}{{ displayEarned }}
+      {{ earned.isNegative() ? '' : '+' }}{{ displayEarned }}
       <span class="text-blue-500">STI</span>
     </p>
 

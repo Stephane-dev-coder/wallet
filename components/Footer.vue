@@ -5,8 +5,11 @@
       dark:bg-dark-1 dark:text-white dark:border-t dark:border-gray-200
       py-10
       px-14
-      grid grid-cols-5
-      gap-4
+      grid-cols-1
+      md:grid-cols-2
+      grid
+      lg:grid-cols-5
+      gap-6
     "
   >
     <ul>
@@ -81,7 +84,7 @@
         </NuxtLink>
       </li>
     </ul>
-    <div class="col-span-2">
+    <div class="col-span-1 lg:col-span-2">
       <h3 class="text-blue-500 text-lg font-bold">Newsletter</h3>
       <div class="flex mt-4">
         <input

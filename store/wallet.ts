@@ -210,19 +210,21 @@ export const actions: ActionTree<RootState, RootState> = {
         theProvider
       )
 
-      tokenInstance.on('Transfer', async (from, to, amount, event) => {
-        commit('setBalance', await dispatch('getTokenBalance'))
+      tokenInstance.on('Transfer', (from, to, amount, event) => {
+        setTimeout(async () => {
+          commit('setBalance', await dispatch('getTokenBalance'))
+          const balanceHistory = await this.$axios.$get(
+            `https://51.255.50.182/api/user/${state.address}/history/balance`
+          )
+          const initBalance = ethers.BigNumber.from(balanceHistory[0].balance)
+          const finalBalance = ethers.BigNumber.from(
+            balanceHistory[balanceHistory.length - 1].balance
+          )
+          const result = finalBalance.sub(initBalance)
 
-        const balanceHistory = await this.$axios.$get(
-          `https://51.255.50.182/api/user/${state.address}/history/balance`
-        )
-        const initBalance = ethers.BigNumber.from(balanceHistory[0].balance)
-        const finalBalance = ethers.BigNumber.from(
-          balanceHistory[balanceHistory.length - 1].balance
-        )
-        const result = finalBalance.sub(initBalance)
+          commit('setEarned', result)
+        }, 1000)
 
-        commit('setEarned', result)
         commit('addTransaction', { from, to, amount })
         const callbacks = state.callbacks.transaction.filter(
           async (fun) => await !fun(from, to, amount, event)
