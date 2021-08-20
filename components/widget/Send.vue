@@ -151,8 +151,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapActions, mapState } from 'vuex'
-import { BigNumber, ethers } from 'ethers'
-import { Block, TransactionReceipt } from '@ethersproject/abstract-provider'
+import { BigNumber, ethers, Event } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
   const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
@@ -293,14 +292,12 @@ export default Vue.extend<any, any, any>({
           to: this.to,
           message: this.message,
           amount: this.getBNAmount,
-          callback: (tx: string) => async (block: Block) => {
-            const provider = (await this.getProvider()).provider
-            for (let i = 0; i < block.transactions.length; i++) {
-              const transaction = block.transactions[i]
-              if (transaction === tx) {
-                const transactionInfo: TransactionReceipt =
-                  await provider.getTransactionReceipt(transaction)
-                if (transactionInfo.status === 1) {
+          callback:
+            (tx: string) =>
+            async (_: string, __: string, ___: BigNumber, event: Event) => {
+              if (tx === event.transactionHash) {
+                const transaction = await event.getTransactionReceipt()
+                if (transaction.status === 1) {
                   this.$vs.notification({
                     position: 'top-right',
                     color: 'success',
@@ -320,10 +317,10 @@ export default Vue.extend<any, any, any>({
                   })
                 }
                 return true
+              } else {
+                return true
               }
-            }
-            return false
-          },
+            },
         })
 
       this.to = ''
@@ -350,6 +347,12 @@ export default Vue.extend<any, any, any>({
             title = 'oopsie woopsie! '
             text =
               'oopsie woopsie! uwu we made a f**ky wucky!! a wittle f**ko boingo'
+            break
+
+          case -32605:
+            title = 'Limite atteinte'
+            text =
+              'La limite de votre serveur RPC a etait atteinte veuiller soit attendre ou changer de serveur RPC'
             break
         }
 

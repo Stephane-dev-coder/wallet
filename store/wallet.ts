@@ -1,5 +1,4 @@
 import { BigNumber, ethers } from 'ethers'
-import { Block } from '@ethersproject/abstract-provider'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import MetaMask from './wallet/metamask'
 import ContractAddress from './vars/contracts'
@@ -32,10 +31,8 @@ interface State {
         event: any
       ) => boolean | Promise<boolean>
     >
-    block: Array<(block: Block) => boolean | Promise<boolean>>
   }
   gasPrice: BigNumber
-  actualBlock: number
 }
 
 export const state = (): State => ({
@@ -53,12 +50,10 @@ export const state = (): State => ({
   transactions: [],
   callbacks: {
     transaction: [],
-    block: [],
   },
   gasPrice: ethers.BigNumber.from(2).mul(
     ethers.BigNumber.from(10).pow(ethers.BigNumber.from(9))
   ),
-  actualBlock: 0,
 })
 
 export type RootState = ReturnType<typeof state>
@@ -108,9 +103,6 @@ export const mutations: MutationTree<RootState> = {
       case 'transaction':
         state.callbacks.transaction.push(callback.fun)
         break
-      case 'block':
-        state.callbacks.block.push(callback.fun)
-        break
     }
   },
   setCallback(state, callbacks) {
@@ -118,13 +110,7 @@ export const mutations: MutationTree<RootState> = {
       case 'transaction':
         state.callbacks.transaction = callbacks.funs
         break
-      case 'block':
-        state.callbacks.block = callbacks.funs
-        break
     }
-  },
-  setBlock(state, blockNumber) {
-    state.actualBlock = blockNumber
   },
 }
 
@@ -168,6 +154,7 @@ export const actions: ActionTree<RootState, RootState> = {
   },
   async getTokenBalance({ state }): Promise<BigNumber> {
     const provider = await MetaMask.getProvider()
+
     if (provider.ok && provider.provider) {
       const tokenInstance = new ethers.Contract(
         ContractAddress.token,
@@ -175,7 +162,11 @@ export const actions: ActionTree<RootState, RootState> = {
         provider.provider
       )
 
-      return await tokenInstance.balanceOf(state.address)
+      try {
+        return await tokenInstance.balanceOf(state.address)
+      } catch (error) {
+        return ethers.BigNumber.from(0).sub(ethers.BigNumber.from(1))
+      }
     } else {
       return ethers.BigNumber.from(0)
     }
@@ -201,8 +192,6 @@ export const actions: ActionTree<RootState, RootState> = {
     const provider = await dispatch('getProvider')
     if (provider.ok === true && provider.provider) {
       const theProvider = provider.provider
-
-      commit('setBlock', await theProvider.getBlockNumber())
 
       const tokenInstance = new ethers.Contract(
         ContractAddress.token,
@@ -230,29 +219,6 @@ export const actions: ActionTree<RootState, RootState> = {
           async (fun) => await !fun(from, to, amount, event)
         )
         commit('setCallback', { type: 'transaction', funs: callbacks })
-      })
-      theProvider.on('didPoll', async () => {
-        const newBlock = await theProvider.getBlockNumber()
-
-        if (newBlock > state.actualBlock) {
-          const diff = newBlock - state.actualBlock
-          if (diff > 1) {
-            const num = diff - 1
-            for (let i = 1; i <= num; i++) {
-              const block = await theProvider.getBlock(state.actualBlock + i)
-              const callbacks = state.callbacks.block.filter(
-                async (fun) => await !fun(block)
-              )
-              commit('setCallback', { type: 'block', funs: callbacks })
-            }
-          }
-          commit('setBlock', newBlock)
-          const block = await theProvider.getBlock(newBlock)
-          const callbacks = state.callbacks.block.filter(
-            async (fun) => await !fun(block)
-          )
-          commit('setCallback', { type: 'block', funs: callbacks })
-        }
       })
       commit('setBalance', await dispatch('getTokenBalance'))
     }
@@ -298,7 +264,7 @@ export const actions: ActionTree<RootState, RootState> = {
       to: string
       amount: BigNumber
       message: string
-      callback: (tx: string) => (block: Block) => boolean | Promise<boolean>
+      callback: (tx: string) => () => boolean | Promise<boolean>
     }
   ) {
     const provider = await dispatch('getProvider')
@@ -322,14 +288,14 @@ export const actions: ActionTree<RootState, RootState> = {
           })
         }
         commit('addCallback', {
-          type: 'block',
+          type: 'transactions',
           fun: callback(result.hash),
         })
         return {
           ok: true,
         }
       } catch (err) {
-        if (err.code === -32603 && err.message.includes('nonce')) {
+        if (err?.code === -32603 && err?.message?.includes('nonce')) {
           return {
             ok: false,
             error: {
@@ -338,7 +304,20 @@ export const actions: ActionTree<RootState, RootState> = {
             },
           }
         }
-        if (err.code === 4001) {
+        if (
+          err?.code === -32603 &&
+          err?.message === "Non-200 status code: '429'"
+        ) {
+          return {
+            ok: false,
+            error: {
+              code: -32605,
+              message: 'Va te faire foutre',
+            },
+          }
+        }
+
+        if (err?.code === 4001) {
           return {
             ok: false,
             error: {
@@ -349,8 +328,8 @@ export const actions: ActionTree<RootState, RootState> = {
         }
 
         if (
-          err.code === -32603 &&
-          err.data.message ===
+          err?.code === -32603 &&
+          err?.data?.message ===
             'VM Exception while processing transaction: revert'
         ) {
           return {

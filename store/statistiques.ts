@@ -44,7 +44,7 @@ export const mutations: MutationTree<RootState> = {
 export const actions: ActionTree<RootState, RootState> = {
   async getStats({ commit }) {
     const pair = await this.$axios.$get(
-      'httpss://api2.sushipro.io/?chainID=137&action=get_pair&pair=' +
+      'https://api2.sushipro.io/?chainID=137&action=get_pair&pair=' +
         contracts.tokenPair
     )
     const priceSTI = pair[0].Token_2_price

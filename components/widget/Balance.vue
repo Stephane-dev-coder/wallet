@@ -50,10 +50,20 @@ const fees = (value: BigNumber, fixedTo = 6) => {
   }
 }
 
-export default Vue.extend({
+export default Vue.extend<any, any, any>({
   computed: {
     displayBalance() {
-      return `${fees(this.balance)}`
+      if (this.balance._hex === '-0x01') {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 10000,
+          title: 'Solde Invalide',
+          text: "Le serveur RPC a eu une erreur et n'a pas retourner la bonnne valeur veuiller attendre une petite minute et relance le site",
+        })
+      }
+      return fees(this.balance)
     },
     ...mapState('wallet', ['isConnected', 'balance']),
   },
