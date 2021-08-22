@@ -24,22 +24,69 @@
     >
       <i class="bx bx-left-arrow-alt mr-2"></i> Retour
     </button>
+    <div
+      v-if="error"
+      class="
+        w-full
+        h-full
+        flex
+        items-center
+        justify-center
+        bg-white
+        dark:bg-nice-dark dark:text-white
+      "
+    >
+      Address incorrect !
+    </div>
     <qrcode-stream @decode="onDecode" @init="onInit" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapMutations } from 'vuex'
 import { QrcodeStream } from 'vue-qrcode-reader'
+import { ethers } from 'ethers'
 
 export default Vue.extend<any, any, any>({
   components: {
     QrcodeStream,
   },
   layout: 'fullscreen',
+  data() {
+    return {
+      camera: 'auto',
+      error: false,
+    }
+  },
   methods: {
+    timeout(ms: number) {
+      return new Promise((resolve) => {
+        window.setTimeout(resolve, ms)
+      })
+    },
     leave() {
       this.$router.push('/')
+    },
+    async onDecode(result: string) {
+      this.camera = 'off'
+      try {
+        const address = ethers.utils.getAddress(result)
+        this.setTo(address)
+        this.$vs.notification({
+          color: 'success',
+          position: 'top-right',
+          title: 'Success !',
+          text: 'Address trouver !',
+          duration: 2000,
+        })
+        await this.timeout(2000)
+        this.$router.push('/')
+      } catch (error) {
+        this.error = true
+        await this.timeout(2000)
+        this.camera = 'auto'
+      }
     },
     async onInit(promise: Promise<void>) {
       const loading = this.$vs.loading()
@@ -91,6 +138,7 @@ export default Vue.extend<any, any, any>({
         }, 10000)
       }
     },
+    ...mapMutations('sender', ['setTo']),
   },
 })
 </script>

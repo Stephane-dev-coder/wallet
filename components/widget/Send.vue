@@ -29,7 +29,7 @@
         <span class="text-sm text-gray-500">Destinataire </span>
         <div class="relative mt-2 w-full">
           <input
-            v-model="to"
+            v-model="fakeTo"
             class="
               w-full
               dark:bg-dark-4
@@ -118,7 +118,7 @@
         <span class="text-sm text-gray-500">Montant </span>
         <div class="relative mt-2 w-full">
           <input
-            v-model.number="amount"
+            v-model.number="fakeAmount"
             class="
               dark:bg-dark-4
               w-full
@@ -168,7 +168,7 @@
       </div>
       <div class="flex flex-col col-span-2">
         <span class="text-sm text-gray-500">Message </span>
-        <CustomTextarea v-model="message" />
+        <CustomTextarea v-model="fakeMessage" />
       </div>
     </div>
     <div class="mt-10 text-sm grid gap-2">
@@ -241,7 +241,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 import { BigNumber, ethers, Event } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -264,19 +264,39 @@ const fees = (value: BigNumber, fixedTo = 6) => {
 export default Vue.extend<any, any, any>({
   data() {
     return {
-      to: '',
-      amount: '',
-      message: '',
       amountError: false,
       amountErrorMessage: 'x',
       stiFees: 0,
       typingTimeout: null,
       isWaiting: false,
-      sendMax: false,
       isAsking: false,
     }
   },
   computed: {
+    fakeTo: {
+      get() {
+        return this.to
+      },
+      set(newValue) {
+        this.setTo(newValue)
+      },
+    },
+    fakeAmount: {
+      get() {
+        return this.amount
+      },
+      set(newValue) {
+        this.setAmount(newValue)
+      },
+    },
+    fakeMessage: {
+      get() {
+        return this.message
+      },
+      set(newValue) {
+        this.setMessage(newValue)
+      },
+    },
     isButtonDisabled() {
       return !this.isToGood || this.amountError || this.amount === ''
     },
@@ -327,17 +347,18 @@ export default Vue.extend<any, any, any>({
       }
     },
     ...mapState('wallet', ['balance', 'gasPrice']),
+    ...mapState('sender', ['to', 'amount', 'message', 'isMax']),
   },
   methods: {
     goScanner() {
       this.$router.push('/scanner')
     },
     setMaxAmount() {
-      this.amount = parseFloat(fees(this.balance))
-      this.sendMax = true
+      this.setAmount(parseFloat(fees(this.balance)))
+      this.setIsMax(true)
     },
     userTyping() {
-      this.sendMax = false
+      this.setIsMax(false)
       if (this.typingTimeout === null) {
         this.typingTimeout = setTimeout(async () => {
           this.typingTimeout = null
@@ -375,7 +396,7 @@ export default Vue.extend<any, any, any>({
     },
     leaveAmountInput() {
       if (this.amount > 99999999) {
-        this.amount = 99999999
+        this.setAmount(99999999)
       }
       if (this.amount !== '') {
         if (this.amount < 0) {
@@ -400,9 +421,9 @@ export default Vue.extend<any, any, any>({
       if (this.isToGood) {
         try {
           const address = ethers.utils.getAddress(this.to)
-          this.to = address
+          this.setTo(address)
         } catch (error) {
-          this.to = ''
+          this.setTo('')
         }
       }
     },
@@ -412,7 +433,7 @@ export default Vue.extend<any, any, any>({
         await this.sendTokens({
           to: this.to,
           message: this.message,
-          amount: this.sendMax ? this.balance : this.getBNAmount,
+          amount: this.isMax ? this.balance : this.getBNAmount,
           callback:
             (tx: string) =>
             async (_: string, __: string, ___: BigNumber, event: Event) => {
@@ -444,9 +465,9 @@ export default Vue.extend<any, any, any>({
             },
         })
 
-      this.to = ''
-      this.amount = ''
-      this.message = ''
+      this.setTo('')
+      this.setAmount(0)
+      this.setMessage('')
 
       this.isWaiting = false
 
@@ -497,6 +518,7 @@ export default Vue.extend<any, any, any>({
       }
     },
     ...mapActions('wallet', ['sendTokens', 'getTokenFees', 'getProvider']),
+    ...mapMutations('sender', ['setTo', 'setAmount', 'setMessage', 'setIsMax']),
   },
 })
 </script>
