@@ -56,6 +56,11 @@
               items-center
             "
           >
+            <qrcode-capture
+              ref="input"
+              class="invisible absolute"
+              @detect="onDecode"
+            />
             <vs-tooltip
               v-model="isAsking"
               shadow
@@ -71,7 +76,6 @@
                   text-lg
                 "
                 @click="isAsking = true"
-                @blur="isAsking = false"
               >
                 <i class="bx bx-qr-scan"></i>
               </button>
@@ -87,7 +91,9 @@
                       justify-center
                       items-center
                       text-lg
+                      relative
                     "
+                    @click="trigger"
                   >
                     <i class="bx bx-image-alt"></i>
                   </button>
@@ -242,6 +248,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapActions, mapState, mapMutations } from 'vuex'
+import { QrcodeCapture } from 'vue-qrcode-reader'
 import { BigNumber, ethers, Event } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -262,6 +269,9 @@ const fees = (value: BigNumber, fixedTo = 6) => {
 }
 
 export default Vue.extend<any, any, any>({
+  components: {
+    QrcodeCapture,
+  },
   data() {
     return {
       amountError: false,
@@ -350,6 +360,43 @@ export default Vue.extend<any, any, any>({
     ...mapState('sender', ['to', 'amount', 'message', 'isMax']),
   },
   methods: {
+    async onDecode(promise: Promise<{ content: string | null }>) {
+      const { content } = await promise
+      const result = content
+      if (result === null) {
+        this.$vs.notification({
+          color: 'danger',
+          position: 'top-right',
+          title: 'Success !',
+          text: 'Address Introuvable !',
+          duration: 2000,
+        })
+      } else {
+        try {
+          const address = ethers.utils.getAddress(result)
+          this.setTo(address)
+          this.$vs.notification({
+            color: 'success',
+            position: 'top-right',
+            title: 'Success !',
+            text: 'Address trouver !',
+            duration: 2000,
+          })
+        } catch (error) {
+          this.$vs.notification({
+            color: 'danger',
+            position: 'top-right',
+            title: 'Erreur !',
+            text: 'Address Introuvable !',
+            duration: 2000,
+          })
+        }
+      }
+    },
+    trigger() {
+      const input = this.$refs.input as any
+      input.$el.click()
+    },
     goScanner() {
       this.$router.push('/scanner')
     },
