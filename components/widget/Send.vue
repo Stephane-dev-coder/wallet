@@ -102,6 +102,7 @@
                       items-center
                       text-lg
                     "
+                    @click="goScanner()"
                   >
                     <i class="bx bx-camera"></i>
                   </button>
@@ -328,6 +329,9 @@ export default Vue.extend<any, any, any>({
     ...mapState('wallet', ['balance', 'gasPrice']),
   },
   methods: {
+    goScanner() {
+      this.$router.push('/scanner')
+    },
     setMaxAmount() {
       this.amount = parseFloat(fees(this.balance))
       this.sendMax = true

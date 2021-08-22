@@ -1,0 +1,96 @@
+<template>
+  <div class="w-full h-full relative">
+    <button
+      class="
+        absolute
+        left-0
+        top-0
+        ml-4
+        mt-4
+        z-10
+        flex
+        items-center
+        bg-white
+        hover:bg-gray-200
+        dark:bg-nice-dark dark:hover:bg-dark-16
+        text-black
+        dark:text-white
+        px-5
+        py-2
+        text-sm
+        rounded-lg
+      "
+      @click="leave"
+    >
+      <i class="bx bx-left-arrow-alt mr-2"></i> Retour
+    </button>
+    <qrcode-stream @decode="onDecode" @init="onInit" />
+  </div>
+</template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { QrcodeStream } from 'vue-qrcode-reader'
+
+export default Vue.extend<any, any, any>({
+  components: {
+    QrcodeStream,
+  },
+  layout: 'fullscreen',
+  methods: {
+    leave() {
+      this.$router.push('/')
+    },
+    async onInit(promise: Promise<void>) {
+      const loading = this.$vs.loading()
+
+      try {
+        await promise
+        loading.close()
+      } catch (error) {
+        let text = ''
+
+        switch (error.name) {
+          case 'NotAllowedError':
+            text = 'Vous devez donner accee a la camera !'
+            break
+          case 'NotFoundError':
+            text = 'Aucune camera a etait trouver !'
+            break
+          case 'InsecureContextError':
+          case 'NotSupportedError':
+            text =
+              'Vous devez avoir une connexion securiser HTTPS pour acceder a la camera'
+            break
+
+          case 'NotReadableError':
+            text = 'Camera deja utiliser'
+            break
+
+          case 'OverconstrainedError':
+            text = "La camera n'est pas exploitable par notre logiciel"
+            break
+
+          case 'StreamApiNotSupportedError':
+            text = "Le navigateur ne permet d'acceder a la camera"
+            break
+
+          default:
+            text = 'Erreur: ' + error.name
+            break
+        }
+        this.$vs.notification({
+          color: 'danger',
+          position: 'top-right',
+          title: 'Erreur !',
+          text,
+          duration: 10000,
+        })
+        setTimeout(() => {
+          window.location.reload()
+        }, 10000)
+      }
+    },
+  },
+})
+</script>
