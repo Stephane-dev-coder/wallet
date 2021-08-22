@@ -292,7 +292,7 @@ export const actions: ActionTree<RootState, RootState> = {
           })
         }
         commit('addCallback', {
-          type: 'transactions',
+          type: 'transaction',
           fun: callback(result.hash),
         })
         return {
