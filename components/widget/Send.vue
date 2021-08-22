@@ -27,36 +27,100 @@
     <div class="grid grid-cols-2 gap-3 mt-6">
       <div class="flex flex-col col-span-2 lg:col-span-1">
         <span class="text-sm text-gray-500">Destinataire </span>
-        <input
-          v-model="to"
-          class="
-            dark:bg-dark-4
-            p-2
-            rounded-lg
-            border
-            dark:border-dark-4
-            mt-2
-            focus:outline-none focus:ring-2
-            dark:text-gray-200
-          "
-          placeholder="0x..."
-          type="text"
-          :class="{ 'ring-2': !isToGood, 'ring-red-400': !isToGood }"
-          @blur="leaveToInput()"
-        />
+        <div class="relative mt-2 w-full">
+          <input
+            v-model="to"
+            class="
+              w-full
+              dark:bg-dark-4
+              p-2
+              rounded-lg
+              border
+              dark:border-dark-4
+              focus:outline-none focus:ring-2
+              dark:text-gray-200
+            "
+            placeholder="0x..."
+            type="text"
+            :class="{ 'ring-2': !isToGood, 'ring-red-400': !isToGood }"
+            @blur="leaveToInput()"
+          />
+          <div
+            class="
+              inset-y-0
+              right-0
+              absolute
+              mx-4
+              flex
+              justify-center
+              items-center
+            "
+          >
+            <vs-tooltip
+              v-model="isAsking"
+              shadow
+              interactivity
+              not-hover
+              color="#FFF"
+            >
+              <button
+                class="
+                  text-blue-500
+                  hover:text-blue-300
+                  focus:text-blue-700
+                  text-lg
+                "
+                @click="isAsking = true"
+                @blur="isAsking = false"
+              >
+                <i class="bx bx-qr-scan"></i>
+              </button>
+              <template #tooltip>
+                <div class="grid grid-cols-2 gap-2 bg-white p-1">
+                  <button
+                    class="
+                      h-8
+                      w-8
+                      rounded
+                      bg-blue-400
+                      flex
+                      justify-center
+                      items-center
+                      text-lg
+                    "
+                  >
+                    <i class="bx bx-image-alt"></i>
+                  </button>
+                  <button
+                    class="
+                      h-8
+                      w-8
+                      rounded
+                      bg-blue-400
+                      flex
+                      justify-center
+                      items-center
+                      text-lg
+                    "
+                  >
+                    <i class="bx bx-camera"></i>
+                  </button>
+                </div> </template
+            ></vs-tooltip>
+          </div>
+        </div>
         <p class="text-xs text-red-500 mt-2" :class="{ invisible: isToGood }">
           L'adresse est incorrect
         </p>
       </div>
       <div class="flex flex-col col-span-2 lg:col-span-1">
         <span class="text-sm text-gray-500">Montant </span>
-        <div class="relative mt-2 w-full h-full">
+        <div class="relative mt-2 w-full">
           <input
             v-model.number="amount"
             class="
-              w-full
-              h-full
               dark:bg-dark-4
+              w-full
               p-2
               rounded-lg
               border
@@ -208,6 +272,7 @@ export default Vue.extend<any, any, any>({
       typingTimeout: null,
       isWaiting: false,
       sendMax: false,
+      isAsking: false,
     }
   },
   computed: {
