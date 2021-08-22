@@ -73,10 +73,10 @@
       </div>
       <vs-tooltip
         v-model="isSharing"
-        shadow
+        :shadow="!isDark"
         interactivity
         not-hover
-        color="#FFF"
+        :color="isDark ? `#232323` : `#FFF`"
       >
         <button
           class="
@@ -117,8 +117,13 @@
           Partager <i class="bx bxs-share-alt ml-2"></i>
         </button>
         <template #tooltip>
-          <div class="grid grid-cols-4 gap-2 bg-white p-1">
+          <div
+            class="grid grid-cols-1 p-1"
+            :class="isDark ? `bg-dark-2` : `bg-white`"
+          >
             <a
+              :href="`https://twitter.com/intent/tweet?text=D%C3%A9sormais%20je%20fait%20partie%20l%27%C3%A9lite%20%21%20Envoyer%20moi%20des%20STI%20a%20${address}.%20Let%27s%20go @StiToken_`"
+              target="_blank"
               class="
                 h-8
                 w-8
@@ -131,53 +136,6 @@
               "
             >
               <i class="bx bxl-twitter"></i>
-            </a>
-            <a
-              class="
-                h-8
-                w-8
-                rounded
-                bg-gradient-to-br
-                from-yellow-400
-                via-red-500
-                to-pink-500
-                flex
-                justify-center
-                items-center
-                text-lg
-              "
-            >
-              <i class="bx bxl-instagram-alt"></i>
-            </a>
-            <a
-              class="
-                h-8
-                w-8
-                rounded
-                bg-blue-600
-                flex
-                justify-center
-                items-center
-                text-lg
-              "
-            >
-              <i class="bx bxl-facebook"></i>
-            </a>
-            <a
-              href="tg.com"
-              target="_blank"
-              class="
-                h-8
-                w-8
-                rounded
-                bg-yellow-300
-                flex
-                justify-center
-                items-center
-                text-lg
-              "
-            >
-              <i class="bx bxl-snapchat"></i>
             </a>
           </div>
         </template>
@@ -201,6 +159,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('wallet', ['address']),
+    ...mapState('app', ['isDark']),
   },
   methods: {
     retrieveQrCode() {
