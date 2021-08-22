@@ -50,24 +50,50 @@
       </div>
       <div class="flex flex-col col-span-2 lg:col-span-1">
         <span class="text-sm text-gray-500">Montant </span>
-        <input
-          v-model.number="amount"
-          class="
-            dark:bg-dark-4
-            p-2
-            rounded-lg
-            border
-            dark:border-dark-4
-            mt-2
-            focus:outline-none focus:ring-2
-            dark:text-gray-200
-          "
-          placeholder="10000"
-          type="number"
-          :class="{ 'ring-2': amountError, 'ring-red-400': amountError }"
-          @blur="leaveAmountInput()"
-          @input="userTyping()"
-        />
+        <div class="relative mt-2 w-full h-full">
+          <input
+            v-model.number="amount"
+            class="
+              w-full
+              h-full
+              dark:bg-dark-4
+              p-2
+              rounded-lg
+              border
+              dark:border-dark-4
+              focus:outline-none focus:ring-2
+              dark:text-gray-200
+            "
+            placeholder="10000"
+            type="number"
+            :class="{ 'ring-2': amountError, 'ring-red-400': amountError }"
+            @blur="leaveAmountInput()"
+            @input="userTyping()"
+          />
+          <div
+            class="
+              inset-y-0
+              right-0
+              absolute
+              mx-4
+              flex
+              justify-center
+              items-center
+            "
+          >
+            <button
+              class="
+                text-blue-500
+                hover:text-blue-300
+                focus:text-blue-700
+                text-sm
+              "
+              @click="setMaxAmount()"
+            >
+              MAX
+            </button>
+          </div>
+        </div>
         <p
           class="text-xs text-red-500 mt-2"
           :class="{ invisible: !amountError }"
@@ -181,6 +207,7 @@ export default Vue.extend<any, any, any>({
       stiFees: 0,
       typingTimeout: null,
       isWaiting: false,
+      sendMax: false,
     }
   },
   computed: {
@@ -236,7 +263,12 @@ export default Vue.extend<any, any, any>({
     ...mapState('wallet', ['balance', 'gasPrice']),
   },
   methods: {
+    setMaxAmount() {
+      this.amount = parseFloat(fees(this.balance))
+      this.sendMax = true
+    },
     userTyping() {
+      this.sendMax = false
       if (this.typingTimeout === null) {
         this.typingTimeout = setTimeout(async () => {
           this.typingTimeout = null
@@ -311,7 +343,7 @@ export default Vue.extend<any, any, any>({
         await this.sendTokens({
           to: this.to,
           message: this.message,
-          amount: this.getBNAmount,
+          amount: this.sendMax ? this.balance : this.getBNAmount,
           callback:
             (tx: string) =>
             async (_: string, __: string, ___: BigNumber, event: Event) => {
