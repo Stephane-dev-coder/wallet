@@ -483,31 +483,44 @@ export default Vue.extend<any, any, any>({
           amount: this.isMax ? this.balance : this.getBNAmount,
           callback:
             (tx: string) =>
-            async (_: string, __: string, ___: BigNumber, event: Event) => {
-              if (tx === event.transactionHash) {
-                const transaction = await event.getTransactionReceipt()
-                if (transaction.status === 1) {
-                  this.$vs.notification({
-                    position: 'top-right',
-                    color: 'success',
-                    icon: `<i class='bx bxs-check-circle' ></i>`,
-                    duration: 5000,
-                    title: 'Transaction effectuer !',
-                    text: 'Votre est argent a etait envoyer !',
-                  })
-                } else {
-                  this.$vs.notification({
-                    position: 'top-right',
-                    color: 'danger',
-                    icon: `<i class='bx bxs-error-circle'></i>`,
-                    duration: 5000,
-                    title: 'Transaction Fail !',
-                    text: `La transaction n'a pas fonctionner vous pouvez avoir plus de details sur https://polygonscan.com/tx/${tx}`,
-                  })
-                }
-                return true
+            async (
+              _: string,
+              __: string,
+              ___: BigNumber,
+              event: Event,
+              isNotTransaction = false,
+              provider:
+                | ethers.providers.JsonRpcProvider
+                | ethers.providers.Web3Provider
+                | undefined
+            ) => {
+              let transaction: ethers.providers.TransactionReceipt
+              if (isNotTransaction && provider) {
+                transaction = await provider.getTransactionReceipt(tx)
+              } else if (tx === event.transactionHash) {
+                transaction = await event.getTransactionReceipt()
               } else {
-                return true
+                return false
+              }
+
+              if (transaction.status === 1) {
+                this.$vs.notification({
+                  position: 'top-right',
+                  color: 'success',
+                  icon: `<i class='bx bxs-check-circle' ></i>`,
+                  duration: 5000,
+                  title: 'Transaction effectuer !',
+                  text: 'Votre est argent a etait envoyer !',
+                })
+              } else {
+                this.$vs.notification({
+                  position: 'top-right',
+                  color: 'danger',
+                  icon: `<i class='bx bxs-error-circle'></i>`,
+                  duration: 5000,
+                  title: 'Transaction Fail !',
+                  text: `La transaction n'a pas fonctionner vous pouvez avoir plus de details sur https://polygonscan.com/tx/${tx}`,
+                })
               }
             },
         })

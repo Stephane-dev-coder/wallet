@@ -25,10 +25,14 @@ interface State {
   callbacks: {
     transaction: Array<
       (
-        from: string,
-        to: string,
-        amount: BigNumber,
-        event: any
+        from: string | null,
+        to: string | null,
+        amount: BigNumber | null,
+        event: any | null,
+        isTransaction?: boolean,
+        provider?:
+          | ethers.providers.Web3Provider
+          | ethers.providers.JsonRpcProvider
       ) => boolean | Promise<boolean>
     >
   }
@@ -224,6 +228,13 @@ export const actions: ActionTree<RootState, RootState> = {
         )
         commit('setCallback', { type: 'transaction', funs: callbacks })
       })
+
+      setInterval(() => {
+        const callbacks = state.callbacks.transaction.filter(
+          async (fun) => await !fun(null, null, null, null, true)
+        )
+        commit('setCallback', { type: 'transaction', funs: callbacks })
+      }, 10000)
       commit('setBalance', await dispatch('getTokenBalance'))
     }
 
