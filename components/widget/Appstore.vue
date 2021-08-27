@@ -46,10 +46,18 @@
       -->
     </h3>
     <div class="flex flex-row mt-6 overflow-x-auto">
-      <WidgetAppstoreItemWebsite
+      <!--
+        <WidgetAppstoreItemWebsite
         to="https://www.cbetwallet.tk/"
         image="/tracker.png"
         name="Wallet Tracker"
+        class="mr-4"
+      />
+      -->
+      <WidgetAppstoreItemLink
+        to="/caverne"
+        image="/cueba.png"
+        name="La Caverne"
         class="mr-4"
       />
       <WidgetAppstoreItemLink
