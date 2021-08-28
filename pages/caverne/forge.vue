@@ -205,12 +205,14 @@
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-      <WidgetForgeMiner :identifier="1" amount="0xfffffffffffffff" />
-      <WidgetForgeMiner :identifier="2" amount="0xfffffffffffffff" />
-      <WidgetForgeMiner :identifier="3" amount="0xfffffffffffffff" />
-      <WidgetForgeMiner :identifier="4" amount="0xfffffffffffffff" />
-      <WidgetForgeMiner :identifier="5" amount="0xfffffffffffffff" />
-      <WidgetForgeMiner :identifier="6" amount="0xfffffffffffffff" />
+      <WidgetForgeMiner amount="0xfffffffffffffff" />
+      <WidgetForgeMiner amount="0xfffffffffffffff" />
+      <WidgetForgeMiner amount="0xfffffffffffffff" />
+      <WidgetForgeMiner amount="0xfffffffffffffff" />
+      <WidgetForgeMiner amount="0xfffffffffffffff" />
+      <WidgetForgeMiner amount="0xfffffffffffffff" />
+      <WidgetForgeMiner amount="0xfffffffffffffff" />
+      <WidgetForgeCreate amount="0xff" />
     </div>
   </div>
 </template>

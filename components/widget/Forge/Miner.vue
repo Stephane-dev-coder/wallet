@@ -1,7 +1,9 @@
 <template>
   <div class="w-full rounded-2xl overflow-hidden bg-white dark:bg-dark-1 p-4">
     <div class="flex justify-between">
-      <h3 class="text-xl font-semibold dark:text-white">#{{ identifier }}</h3>
+      <h3 class="text-xl font-semibold dark:text-white">
+        {{ displayBigNumber }}
+      </h3>
       <img :src="pickaxe" class="h-8 w-8 bg-gray-100 dark:bg-dark-2 rounded" />
     </div>
     <div class="grid grid-cols-1 gap-3 mt-1">
@@ -154,12 +156,27 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { ethers, BigNumber } from 'ethers'
+
+const fees = (value: BigNumber, fixedTo = 6) => {
+  const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
+  let price = value
+    .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(puissance)))
+    .toString()
+  if (price.length < fixedTo || price.length === fixedTo) {
+    const diff = fixedTo - price.length
+    for (let i = 0; i < diff; i++) {
+      price = `0${price}`
+    }
+    return `0.${price}`
+  } else {
+    const diff = price.length - fixedTo
+    return `${price.substring(0, diff)}.${price.substring(diff)}`
+  }
+}
+
 export default Vue.extend<any, any, any, any>({
   props: {
-    identifier: {
-      type: Number,
-      required: true,
-    },
     amount: {
       type: String,
       required: true,
@@ -178,6 +195,9 @@ export default Vue.extend<any, any, any, any>({
     }
   },
   computed: {
+    displayBigNumber() {
+      return fees(ethers.BigNumber.from(this.amount))
+    },
     pickaxe() {
       switch (this.select) {
         case '2':
