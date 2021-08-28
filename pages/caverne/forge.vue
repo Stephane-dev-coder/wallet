@@ -13,7 +13,7 @@
         <div class="flex justify-between">
           <h3 class="text-xl font-semibold dark:text-white">Cree outils</h3>
           <img
-            src="/wood_pickaxe.png"
+            src="/pickaxe/wood.png"
             class="h-14 w-14 bg-gray-100 dark:bg-dark-2 rounded-lg"
           />
         </div>
@@ -74,6 +74,7 @@
               dark:border-white
               px-5
               py-2
+              mr-2
               text-sm
               rounded-lg
               transition
@@ -90,8 +91,64 @@
               focus:outline-none
               dark:ring-offset-black
             "
+            :disabled="factory.isDisable"
+            :class="{
+              'hover:text-white': !factory.isDisable,
+              'dark:hover:text-black': !factory.isDisable,
+              'hover:border-black': !factory.isDisable,
+              'dark:hover:border-white': !factory.isDisable,
+              'hover:bg-black': !factory.isDisable,
+              'dark:hover:bg-white': !factory.isDisable,
+              'cursor-default': factory.isDisable,
+            }"
           >
-            <i v-if="false" class="bx bx-loader-alt animate-spin mr-1"></i>
+            <i
+              v-if="factory.isWaiting"
+              class="bx bx-loader-alt animate-spin mr-1"
+            ></i>
+            <span v-else>Activer Forge <i class="bx bxs-send ml-2"></i></span>
+          </button>
+          <button
+            class="
+              bg-white
+              dark:bg-nice-dark
+              text-black
+              dark:text-white
+              border-2 border-black
+              dark:border-white
+              px-5
+              py-2
+              text-sm
+              rounded-lg
+              transition
+              duration-300
+              ring-offset-2
+              focus:text-white
+              dark:focus:text-black
+              focus:bg-black
+              dark:focus:bg-white
+              focus:border-black
+              dark:focus:border-white
+              focus:ring focus:ring-black
+              dark:focus:ring-white
+              focus:outline-none
+              dark:ring-offset-black
+            "
+            :disabled="create.isDisable"
+            :class="{
+              'hover:text-white': !create.isDisable,
+              'dark:hover:text-black': !create.isDisable,
+              'hover:border-black': !create.isDisable,
+              'dark:hover:border-white': !create.isDisable,
+              'hover:bg-black': !create.isDisable,
+              'dark:hover:bg-white': !create.isDisable,
+              'cursor-default': create.isDisable,
+            }"
+          >
+            <i
+              v-if="create.isWaiting"
+              class="bx bx-loader-alt animate-spin mr-1"
+            ></i>
             <span v-else>Cree <i class="bx bxs-send ml-2"></i></span>
           </button>
         </div>
@@ -146,133 +203,14 @@
           vous en miner !
         </p>
       </div>
-      <div
-        class="w-full rounded-2xl overflow-hidden bg-white dark:bg-dark-1 p-4"
-      >
-        <div class="flex justify-between">
-          <h3 class="text-xl font-semibold dark:text-white">#1</h3>
-          <img
-            src="/wood_pickaxe.png"
-            class="h-8 w-8 bg-gray-100 dark:bg-dark-2 rounded"
-          />
-        </div>
-        <div class="grid grid-cols-1 gap-3 mt-1">
-          <div class="flex flex-col">
-            <span class="text-sm text-gray-500">Niveau </span>
-            <vs-select
-              v-model="select"
-              placeholder="Select"
-              class="w-full mt-2"
-              state="dark"
-            >
-              <vs-option label="Pierre" value="1"> Pierre </vs-option>
-              <vs-option label="Fer" value="2"> Fer </vs-option>
-              <vs-option label="Or" value="3"> Or </vs-option>
-              <vs-option label="Diamand" value="4"> Diamand </vs-option>
-              <vs-option label="Netherite" value="5"> Netherite </vs-option>
-            </vs-select>
-            <p class="text-xs text-red-500 mt-2" :class="{ invisible: true }">
-              {{ 'Error' }}
-            </p>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 gap-3 mt-1">
-          <div class="flex flex-col">
-            <div class="flex justify-between">
-              <span class="text-sm text-gray-500">Bloquer Claim ? </span>
-              <vs-switch v-model="lockClaim" />
-            </div>
-
-            <p class="text-xs text-red-500 mt-2" :class="{ invisible: true }">
-              {{ 'Error' }}
-            </p>
-          </div>
-        </div>
-        <div class="text-sm grid gap-2">
-          <div
-            class="
-              flex
-              justify-between
-              items-center
-              font-semibold
-              dark:text-white
-            "
-          >
-            <vs-tooltip>
-              Multiplicateur
-              <template #tooltip> Multiplie vos gains de vos LPs </template>
-            </vs-tooltip>
-            <span class="text-blue-500 font-bold">x{{ 5 }}</span>
-          </div>
-          <div
-            class="
-              flex
-              justify-between
-              items-center
-              font-semibold
-              dark:text-white
-            "
-          >
-            <vs-tooltip>
-              Claim bloquer
-              <template #tooltip>
-                Est ce que vous pourrez retirer vos gains avant que votre temps
-                bloquer soit achever
-              </template>
-            </vs-tooltip>
-            <span class="text-blue-500 font-bold">Non</span>
-          </div>
-          <div
-            class="
-              flex
-              justify-between
-              items-center
-              font-semibold
-              dark:text-white
-            "
-          >
-            <vs-tooltip
-              >Temps bloquer
-              <template #tooltip>
-                Le temps qu'il vous faudra attendre avant de recuperer vos LPs
-              </template>
-            </vs-tooltip>
-            <span class="text-blue-500 font-bold">5 ans</span>
-          </div>
-        </div>
-        <div class="flex justify-end mt-3">
-          <button
-            class="
-              bg-white
-              dark:bg-nice-dark
-              text-black
-              dark:text-white
-              border-2 border-black
-              dark:border-white
-              px-5
-              py-2
-              text-sm
-              rounded-lg
-              transition
-              duration-300
-              ring-offset-2
-              focus:text-white
-              dark:focus:text-black
-              focus:bg-black
-              dark:focus:bg-white
-              focus:border-black
-              dark:focus:border-white
-              focus:ring focus:ring-black
-              dark:focus:ring-white
-              focus:outline-none
-              dark:ring-offset-black
-            "
-          >
-            <i v-if="false" class="bx bx-loader-alt animate-spin mr-1"></i>
-            <span v-else>Miner <i class="bx bxs-send ml-2"></i></span>
-          </button>
-        </div>
-      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+      <WidgetForgeMiner :identifier="1" amount="0xfffffffffffffff" />
+      <WidgetForgeMiner :identifier="2" amount="0xfffffffffffffff" />
+      <WidgetForgeMiner :identifier="3" amount="0xfffffffffffffff" />
+      <WidgetForgeMiner :identifier="4" amount="0xfffffffffffffff" />
+      <WidgetForgeMiner :identifier="5" amount="0xfffffffffffffff" />
+      <WidgetForgeMiner :identifier="6" amount="0xfffffffffffffff" />
     </div>
   </div>
 </template>
@@ -282,57 +220,16 @@ import Vue from 'vue'
 export default Vue.extend({
   data() {
     return {
-      select: '',
-      lockClaim: false,
+      factory: {
+        isDisable: false,
+        isWaiting: false,
+        show: true,
+      },
+      create: {
+        isDisable: true,
+        isWaiting: false,
+      },
     }
   },
 })
 </script>
-
-<style lang="scss">
-.vs-select-content {
-  max-width: none;
-}
-
-.vs-select--state-dark {
-  .vs-select__input {
-    background-color: rgba(39, 39, 39, 1);
-    color: white;
-  }
-
-  .vs-select__label {
-    color: white;
-  }
-}
-
-.vs-select--state-dark.activeOptions {
-  .vs-select__label {
-    color: rgba(var(--vs-text), 1);
-  }
-}
-
-.dark {
-  .vs-switch {
-    color: #fff;
-    padding: 5px;
-    border-radius: 20px;
-    min-width: 48px;
-    height: 28px;
-    border: 0px;
-    position: relative;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    background: rgba(39, 39, 39, 1);
-    -webkit-transition: all 0.25s ease;
-    transition: all 0.25s ease;
-    overflow: hidden;
-  }
-}
-</style>
