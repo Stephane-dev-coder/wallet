@@ -148,6 +148,7 @@
               'dark:hover:bg-white': !create.isDisable,
               'cursor-default': create.isDisable,
             }"
+            @click="clickAddETH()"
           >
             <i
               v-if="create.isWaiting"
@@ -255,6 +256,7 @@ export default Vue.extend<any, any, any, any>({
       },
       maxETH: 0,
       amount: 0,
+      intervals: [],
     }
   },
   computed: {
@@ -264,12 +266,82 @@ export default Vue.extend<any, any, any, any>({
   },
   async mounted() {
     this.maxETH = parseFloat(fees(await this.getETHBalance()))
-    const address = await this.getProxy(this.address)
-    this.factory.show = address === '0x0000000000000000000000000000000000000000'
-    this.create.isDisable = this.factory.show
+    setTimeout(async () => {
+      await this.syncProxy()
+    }, 1000)
   },
   methods: {
+    async clickAddETH() {
+      const previousBalance: BigNumber = await this.getLpBalance()
+      const result = await this.createLp(this.amount)
+      if (result === -1) {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 10000,
+          title: 'Erreur',
+          text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
+        })
+      } else {
+        const idArray = this.intervals.length
+        const idInterval = setInterval(async () => {
+          const actualBalance: BigNumber = await this.getLpBalance()
+          if (actualBalance.gt(previousBalance)) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'success',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Niquel',
+              text: 'Votre forge a etait cree !',
+            })
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else if (this.intervals[idArray].itteration > 5) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'danger',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Oops !',
+              text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
+            })
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else {
+            this.intervals[idArray].itteration =
+              this.intervals[idArray].itteration + 1
+          }
+        }, 3000)
+        this.intervals.push({
+          id: idInterval,
+          itteration: 0,
+        })
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'success',
+          icon: `<i class='bx bxs-check-circle'></i>`,
+          duration: 4000,
+          title: 'Niquel',
+          text: 'Transaction envoyer au reseaux !',
+        })
+      }
+    },
+    async syncProxy() {
+      if (this.factory.show) {
+        const address = await this.getProxy(this.address)
+        if (address !== -1) {
+          this.factory.show =
+            address === '0x0000000000000000000000000000000000000000'
+          this.create.isDisable = this.factory.show
+        }
+      }
+    },
     async clickMax() {
+      this.syncProxy()
       if (this.maxETH > 0.01) {
         this.amount = this.maxETH - 0.01
       } else {
@@ -289,7 +361,42 @@ export default Vue.extend<any, any, any, any>({
           text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
         })
       } else {
-        // setInterval(() => {}, 3000)
+        const idArray = this.intervals.length
+        const idInterval = setInterval(async () => {
+          await this.syncProxy()
+          if (!this.factory.show) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'success',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Niquel',
+              text: 'Votre argent a etait crediter !',
+            })
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else if (this.intervals[idArray].itteration > 5) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'danger',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Oops !',
+              text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
+            })
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else {
+            this.intervals[idArray].itteration =
+              this.intervals[idArray].itteration + 1
+          }
+        }, 3000)
+        this.intervals.push({
+          id: idInterval,
+          itteration: 0,
+        })
         result.this.$vs.notification({
           position: 'top-right',
           color: 'success',
@@ -301,7 +408,12 @@ export default Vue.extend<any, any, any, any>({
       }
     },
     ...mapActions('wallet', ['getETHBalance']),
-    ...mapActions('lockers', ['createProxy', 'getProxy']),
+    ...mapActions('lockers', [
+      'createProxy',
+      'getProxy',
+      'createLp',
+      'getLpBalance',
+    ]),
   },
 })
 </script>

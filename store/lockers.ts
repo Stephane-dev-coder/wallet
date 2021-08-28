@@ -9,6 +9,9 @@ const factoryAbi = [
   'function getProxyOf(address user) external view returns (address proxy)',
 ]
 
+const proxyAbi = ['function createLP() external payable']
+const pairAbi = ['function balanceOf(address) view returns (uint)']
+
 const fees = (value: BigNumber, fixedTo = 6) => {
   const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
   let price = value
@@ -87,6 +90,14 @@ export const mutations: MutationTree<RootState> = {
   setProxy(state, address) {
     state.proxyAddress = address
   },
+  setProxyBalance(state, balance) {
+    state.lp.realProxy = balance
+    const previousPorxyBalance = ethers.BigNumber.from(state.lp.proxy)
+    const actualPorxyBalance = ethers.BigNumber.from(balance)
+    if (actualPorxyBalance.gt(previousPorxyBalance)) {
+      state.lp.proxy = previousPorxyBalance.sub(actualPorxyBalance)._hex
+    }
+  },
 }
 
 export const actions: ActionTree<RootState, RootState> = {
@@ -127,6 +138,51 @@ export const actions: ActionTree<RootState, RootState> = {
         const proxy = await factory.getProxyOf(address)
         commit('setProxy', proxy)
         return proxy
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+
+  async createLp({ state }, amount) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const proxy = new ethers.Contract(
+        state.proxyAddress,
+        proxyAbi,
+        superProvider
+      ).connect(superProvider.getSigner())
+
+      try {
+        await proxy.createLP({ value: ethers.utils.parseEther(`${amount}`) })
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async getLpBalance({ commit, state }) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const proxy = new ethers.Contract(
+        contracts.tokenPair,
+        pairAbi,
+        superProvider
+      )
+
+      try {
+        const balance = await proxy.balanceOf(state.proxyAddress)
+        commit('setProxyBalance', balance._hex)
+        return balance
       } catch (error) {
         return -1
       }
