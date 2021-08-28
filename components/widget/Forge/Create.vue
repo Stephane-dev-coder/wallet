@@ -13,9 +13,16 @@
     <div class="flex justify-between">
       <h3 class="text-xl font-semibold dark:text-white">Rajouter outils</h3>
     </div>
-    <div class="grid grid-cols-1 gap-3 mt-1 flex-grow">
-      <div class="flex flex-col">
+    <div class="flex justify-center items-center w-full mt-1 flex-grow">
+      <div class="flex flex-col w-full">
         <span class="text-sm text-gray-500">Montant </span>
+        <vue-slider
+          v-model="amount"
+          :min="0"
+          :max="12.786"
+          :interval="0.001"
+          class="mt-2"
+        />
       </div>
     </div>
 
@@ -55,8 +62,13 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/antd.css'
 
 export default Vue.extend<any, any, any, any>({
+  components: {
+    VueSlider,
+  },
   data() {
     return {
       amount: 0,

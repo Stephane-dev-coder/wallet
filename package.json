@@ -20,6 +20,7 @@
     "qrious": "^4.0.2",
     "sass": "^1.38.2",
     "vue-qrcode-reader": "^3.0.3",
+    "vue-slider-component": "^3.2.14",
     "vuesax": "^4.0.1-alpha.25"
   },
   "devDependencies": {
