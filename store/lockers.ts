@@ -92,11 +92,10 @@ export const mutations: MutationTree<RootState> = {
   },
   setProxyBalance(state, balance) {
     state.lp.realProxy = balance
-    const previousPorxyBalance = ethers.BigNumber.from(state.lp.proxy)
-    const actualPorxyBalance = ethers.BigNumber.from(balance)
-    if (actualPorxyBalance.gt(previousPorxyBalance)) {
-      state.lp.proxy = previousPorxyBalance.sub(actualPorxyBalance)._hex
-    }
+  },
+  createProxyBalance(state, balance) {
+    state.lp.realProxy = balance
+    state.lp.proxy = balance
   },
 }
 
@@ -181,6 +180,9 @@ export const actions: ActionTree<RootState, RootState> = {
 
       try {
         const balance = await proxy.balanceOf(state.proxyAddress)
+        if (state.lp.proxy === '0x00') {
+          commit('createProxyBalance', balance._hex)
+        }
         commit('setProxyBalance', balance._hex)
         return balance
       } catch (error) {

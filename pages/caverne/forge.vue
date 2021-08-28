@@ -222,7 +222,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapGetters, mapActions, mapState } from 'vuex'
+import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
 import { ethers, BigNumber } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -261,13 +261,13 @@ export default Vue.extend<any, any, any, any>({
   },
   computed: {
     ...mapGetters('lockers', ['getTools', 'getRelativeLp']),
-    ...mapState('lockers', ['getTools', 'getRelativeLp']),
     ...mapState('wallet', ['address']),
   },
   async mounted() {
     this.maxETH = parseFloat(fees(await this.getETHBalance()))
     setTimeout(async () => {
       await this.syncProxy()
+      await this.getLpBalance()
     }, 1000)
   },
   methods: {
@@ -295,6 +295,11 @@ export default Vue.extend<any, any, any, any>({
               duration: 4000,
               title: 'Niquel',
               text: 'Votre forge a etait cree !',
+            })
+            this.addTool({
+              amount: actualBalance.sub(previousBalance)._hex,
+              time: '0x00',
+              claimLocked: true,
             })
             clearInterval(this.intervals[idArray].id)
             this.intervals[idArray] = this.intervals[this.intervals.length - 1]
@@ -414,6 +419,7 @@ export default Vue.extend<any, any, any, any>({
       'createLp',
       'getLpBalance',
     ]),
+    ...mapMutations('lockers', ['addTool']),
   },
 })
 </script>
