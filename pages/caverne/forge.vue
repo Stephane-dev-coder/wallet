@@ -22,6 +22,7 @@
             <span class="text-sm text-gray-500">BNB </span>
             <div class="relative mt-2 w-full">
               <input
+                v-model.number="amount"
                 class="
                   dark:bg-dark-4
                   w-full
@@ -53,6 +54,7 @@
                     focus:text-blue-700
                     text-sm
                   "
+                  @click="clickMax()"
                 >
                   MAX
                 </button>
@@ -205,20 +207,38 @@
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-      <WidgetForgeMiner amount="0xfffffffffffffff" />
-      <WidgetForgeMiner amount="0xfffffffffffffff" />
-      <WidgetForgeMiner amount="0xfffffffffffffff" />
-      <WidgetForgeMiner amount="0xfffffffffffffff" />
-      <WidgetForgeMiner amount="0xfffffffffffffff" />
-      <WidgetForgeMiner amount="0xfffffffffffffff" />
-      <WidgetForgeMiner amount="0xfffffffffffffff" />
-      <WidgetForgeCreate amount="0xff" />
+      <WidgetForgeMiner
+        v-for="(tool, index) in getTools"
+        :key="index"
+        :amount="tool.amount"
+      />
+      <WidgetForgeCreate v-if="getRelativeLp > 0" :max="getRelativeLp" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapGetters, mapActions } from 'vuex'
+import { ethers, BigNumber } from 'ethers'
+
+const fees = (value: BigNumber, fixedTo = 6) => {
+  const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
+  let price = value
+    .div(ethers.BigNumber.from(10).pow(ethers.BigNumber.from(puissance)))
+    .toString()
+  if (price.length < fixedTo || price.length === fixedTo) {
+    const diff = fixedTo - price.length
+    for (let i = 0; i < diff; i++) {
+      price = `0${price}`
+    }
+    return `0.${price}`
+  } else {
+    const diff = price.length - fixedTo
+    return `${price.substring(0, diff)}.${price.substring(diff)}`
+  }
+}
+
 export default Vue.extend({
   data() {
     return {
@@ -231,7 +251,26 @@ export default Vue.extend({
         isDisable: true,
         isWaiting: false,
       },
+      maxETH: 0,
+      amount: 0,
     }
+  },
+  computed: {
+    ...mapGetters('lockers', ['getTools', 'getRelativeLp']),
+  },
+  async mounted() {
+    this.maxETH = parseFloat(fees(await this.getETHBalance()))
+  },
+  methods: {
+    async clickMax() {
+      if (this.maxETH > 0.01) {
+        this.amount = this.maxETH - 0.01
+      } else {
+        this.amount = 0
+      }
+      this.maxETH = parseFloat(fees(await this.getETHBalance()))
+    },
+    ...mapActions('wallet', ['getETHBalance']),
   },
 })
 </script>

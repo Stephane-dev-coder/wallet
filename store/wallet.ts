@@ -156,6 +156,18 @@ export const actions: ActionTree<RootState, RootState> = {
       }
     }
   },
+  async getETHBalance({ state }): Promise<BigNumber> {
+    const provider = await MetaMask.getProvider()
+    if (provider.ok && provider.provider) {
+      const superProvider = provider.provider
+      if (state.address !== '') {
+        return await superProvider.getBalance(state.address)
+      } else {
+        return ethers.BigNumber.from(0)
+      }
+    }
+    return ethers.BigNumber.from(0)
+  },
   async getTokenBalance({ state }): Promise<BigNumber> {
     const provider = await MetaMask.getProvider()
 

@@ -19,8 +19,8 @@
         <vue-slider
           v-model="amount"
           :min="0"
-          :max="12.786"
-          :interval="0.001"
+          :max="max"
+          :interval="getInterval"
           class="mt-2"
         />
       </div>
@@ -69,11 +69,24 @@ export default Vue.extend<any, any, any, any>({
   components: {
     VueSlider,
   },
+  props: {
+    max: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       amount: 0,
     }
   },
-  computed: {},
+  computed: {
+    getInterval() {
+      const maxString = `${this.max}`
+      const afterDot = maxString.substr(maxString.indexOf('.'))
+      const num = afterDot.length > 2 ? afterDot.length - 1 : 2
+      return 1 / 10 ** num
+    },
+  },
 })
 </script>
