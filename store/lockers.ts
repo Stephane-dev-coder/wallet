@@ -1,5 +1,13 @@
 import { ethers, BigNumber } from 'ethers'
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import MetaMask from './wallet/metamask'
+
+import contracts from './vars/contracts'
+
+const factoryAbi = [
+  'function createProxy() external returns (address proxy)',
+  'function getProxyOf(address user) external view returns (address proxy)',
+]
 
 const fees = (value: BigNumber, fixedTo = 6) => {
   const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
@@ -26,6 +34,7 @@ interface State {
     realProxy: string
   }
   tools: { amount: string; time: string; claimLocked: boolean }[]
+  proxyAddress: string
 }
 
 export const state = (): State => ({
@@ -36,6 +45,7 @@ export const state = (): State => ({
     realProxy: '0x00',
   },
   tools: [],
+  proxyAddress: '',
 })
 
 export type RootState = ReturnType<typeof state>
@@ -74,6 +84,54 @@ export const mutations: MutationTree<RootState> = {
     state.tools[id] = state.tools[state.tools.length - 1]
     state.tools.pop()
   },
+  setProxy(state, address) {
+    state.proxyAddress = address
+  },
 }
 
-export const actions: ActionTree<RootState, RootState> = {}
+export const actions: ActionTree<RootState, RootState> = {
+  async createProxy() {
+    const provider = await MetaMask.getProvider()
+
+    if (provider.ok && provider.provider) {
+      const superProvider = provider.provider
+
+      const factory = new ethers.Contract(
+        contracts.factory,
+        factoryAbi,
+        superProvider
+      ).connect(superProvider.getSigner())
+
+      try {
+        return await factory.createProxy()
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async getProxy({ commit }, address) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider.ok && provider.provider) {
+      const superProvider = provider.provider
+
+      const factory = new ethers.Contract(
+        contracts.factory,
+        factoryAbi,
+        superProvider
+      )
+
+      try {
+        const proxy = await factory.getProxyOf(address)
+        commit('setProxy', proxy)
+        return proxy
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+}

@@ -67,6 +67,7 @@
         </div>
         <div class="flex justify-end mt-6">
           <button
+            v-if="factory.show"
             class="
               bg-white
               dark:bg-nice-dark
@@ -103,6 +104,7 @@
               'dark:hover:bg-white': !factory.isDisable,
               'cursor-default': factory.isDisable,
             }"
+            @click="clickCreateProxy()"
           >
             <i
               v-if="factory.isWaiting"
@@ -219,7 +221,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 import { ethers, BigNumber } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -239,7 +241,7 @@ const fees = (value: BigNumber, fixedTo = 6) => {
   }
 }
 
-export default Vue.extend({
+export default Vue.extend<any, any, any, any>({
   data() {
     return {
       factory: {
@@ -257,9 +259,14 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters('lockers', ['getTools', 'getRelativeLp']),
+    ...mapState('lockers', ['getTools', 'getRelativeLp']),
+    ...mapState('wallet', ['address']),
   },
   async mounted() {
     this.maxETH = parseFloat(fees(await this.getETHBalance()))
+    const address = await this.getProxy(this.address)
+    this.factory.show = address === '0x0000000000000000000000000000000000000000'
+    this.create.isDisable = this.factory.show
   },
   methods: {
     async clickMax() {
@@ -270,7 +277,31 @@ export default Vue.extend({
       }
       this.maxETH = parseFloat(fees(await this.getETHBalance()))
     },
+    async clickCreateProxy() {
+      const result = await this.createProxy()
+      if (result === -1) {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 10000,
+          title: 'Erreur',
+          text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
+        })
+      } else {
+        // setInterval(() => {}, 3000)
+        result.this.$vs.notification({
+          position: 'top-right',
+          color: 'success',
+          icon: `<i class='bx bxs-check-circle'></i>`,
+          duration: 4000,
+          title: 'Niquel',
+          text: 'Transaction envoyer au reseaux !',
+        })
+      }
+    },
     ...mapActions('wallet', ['getETHBalance']),
+    ...mapActions('lockers', ['createProxy', 'getProxy']),
   },
 })
 </script>
