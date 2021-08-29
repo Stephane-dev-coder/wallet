@@ -12,6 +12,7 @@ const factoryAbi = [
 const proxyAbi = [
   'function createLP() external payable',
   'function destroyLP(uint amount) external',
+  'function stake(uint amount, uint time, bool isClaimLocked) external returns (uint multiplier, uint unlock)',
 ]
 const pairAbi = ['function balanceOf(address) view returns (uint)']
 
@@ -127,6 +128,18 @@ export const mutations: MutationTree<RootState> = {
   },
   setProxyBalance(state, balance) {
     state.lp.realProxy = balance
+
+    let total = ethers.BigNumber.from(0)
+
+    for (let i = 0; i < state.tools.length; i++) {
+      const tool = state.tools[i]
+      total = total.add(ethers.BigNumber.from(tool.amount))
+    }
+    total = total.add(state.lp.proxy)
+    if (total > balance) {
+      state.tools = []
+      window.localStorage.setItem('savedTools', JSON.stringify(state.tools))
+    }
   },
   createProxyBalance(state, balance) {
     state.lp.realProxy = balance
@@ -243,6 +256,53 @@ export const actions: ActionTree<RootState, RootState> = {
         }
         commit('setProxyBalance', balance._hex)
         return balance
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async getPowerBalance({ state }) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        pairAbi,
+        superProvider
+      )
+
+      try {
+        return await locker.balanceOf(state.proxyAddress)
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async stakeTool({ state }, id) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const proxy = new ethers.Contract(
+        state.proxyAddress,
+        proxyAbi,
+        superProvider
+      ).connect(superProvider.getSigner())
+
+      try {
+        const tool = state.tools[id]
+        await proxy.stake(
+          ethers.BigNumber.from(tool.amount),
+          ethers.BigNumber.from(tool.time),
+          tool.claimLocked
+        )
       } catch (error) {
         return -1
       }

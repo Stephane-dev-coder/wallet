@@ -144,6 +144,7 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        @click="clickStake()"
       >
         <i
           v-if="miner.isWaiting"
@@ -328,8 +329,73 @@ export default Vue.extend<any, any, any, any>({
         })
       }
     },
+    async clickStake() {
+      const previousBalance: BigNumber = await this.getPowerBalance()
+      const result = await this.stakeTool(this.tool)
+      if (result === -1) {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 10000,
+          title: 'Erreur',
+          text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
+        })
+      } else {
+        const idArray = this.intervals.length
+        const idInterval = setInterval(async () => {
+          const actualBalance: BigNumber = await this.getPowerBalance()
+          if (actualBalance.gt(previousBalance)) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'success',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Niquel',
+              text: 'Aller a la forge pour voir votre minage !',
+            })
+            this.removeTool(this.tool)
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else if (this.intervals[idArray].itteration > 5) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'danger',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Oops !',
+              text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
+            })
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else {
+            this.intervals[idArray].itteration =
+              this.intervals[idArray].itteration + 1
+          }
+        }, 3000)
+        this.intervals.push({
+          id: idInterval,
+          itteration: 0,
+        })
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'success',
+          icon: `<i class='bx bxs-check-circle'></i>`,
+          duration: 4000,
+          title: 'Niquel',
+          text: 'Transaction envoyer au reseaux !',
+        })
+      }
+    },
     ...mapMutations('lockers', ['setToolTime', 'setToolClaim', 'removeTool']),
-    ...mapActions('lockers', ['destroyLp', 'getLpBalance']),
+    ...mapActions('lockers', [
+      'destroyLp',
+      'getLpBalance',
+      'stakeTool',
+      'getPowerBalance',
+    ]),
   },
 })
 </script>
