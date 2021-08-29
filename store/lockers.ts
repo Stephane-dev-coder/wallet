@@ -41,6 +41,12 @@ interface State {
     realProxy: string
   }
   tools: { amount: string; time: string; claimLocked: boolean }[]
+  vaults: {
+    amount: string
+    unlock: string
+    multiplier: string
+    claimLocked: boolean
+  }[]
   proxyAddress: string
 }
 
@@ -58,6 +64,7 @@ export const state = (): State => ({
     realProxy: '0x00',
   },
   tools: storageTools,
+  vaults: [],
   proxyAddress: storageProxyAddress || '',
 })
 

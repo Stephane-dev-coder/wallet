@@ -207,23 +207,33 @@ export default Vue.extend<any, any, any, any>({
       switch (this.select) {
         case '2':
           this.setToolTime({ id: this.tool, time: '0x3C26700' })
-          return '/pickaxe/iron.png'
+          return this.lockClaim
+            ? '/pickaxe/iron_enchant.gif'
+            : '/pickaxe/iron.png'
 
         case '3':
           this.setToolTime({ id: this.tool, time: '0x5A39A80' })
-          return '/pickaxe/gold.png'
+          return this.lockClaim
+            ? '/pickaxe/gold_enchant.gif'
+            : '/pickaxe/gold.png'
 
         case '4':
           this.setToolTime({ id: this.tool, time: '0x784CE00' })
-          return '/pickaxe/diamond.png'
+          return this.lockClaim
+            ? '/pickaxe/diamond_enchant.gif'
+            : '/pickaxe/diamond.png'
 
         case '5':
           this.setToolTime({ id: this.tool, time: '0x9660180' })
-          return '/pickaxe/netherite.png'
+          return this.lockClaim
+            ? '/pickaxe/netherite_enchant.gif'
+            : '/pickaxe/netherite.png'
 
         case '1':
           this.setToolTime({ id: this.tool, time: '0x1E13380' })
-          return '/pickaxe/stone.png'
+          return this.lockClaim
+            ? '/pickaxe/stone_enchant.gif'
+            : '/pickaxe/stone.png'
 
         default:
           this.setToolTime({ id: this.tool, time: '0x00' })
