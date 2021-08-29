@@ -53,6 +53,7 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        @click="addNewTool()"
       >
         <span>Ajouter <i class="bx bxs-send ml-2"></i></span>
       </button>
@@ -62,8 +63,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapMutations } from 'vuex'
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
+import { ethers } from 'ethers'
 
 export default Vue.extend<any, any, any, any>({
   components: {
@@ -87,6 +90,13 @@ export default Vue.extend<any, any, any, any>({
       const num = afterDot.length > 2 ? afterDot.length - 1 : 2
       return 1 / 10 ** num
     },
+  },
+  methods: {
+    addNewTool() {
+      const realAmount = ethers.utils.parseEther(`${this.amount}`)
+      this.addTool({ amount: realAmount._hex, time: '0x00', claimLocked: true })
+    },
+    ...mapMutations('lockers', ['addTool']),
   },
 })
 </script>

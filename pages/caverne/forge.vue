@@ -213,7 +213,7 @@
       <WidgetForgeMiner
         v-for="(tool, index) in getTools"
         :key="index"
-        :amount="tool.amount"
+        :tool="index"
       />
       <WidgetForgeCreate v-if="getRelativeLp > 0" :max="getRelativeLp" />
     </div>

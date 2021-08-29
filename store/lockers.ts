@@ -68,6 +68,9 @@ export const getters: GetterTree<RootState, RootState> = {
       }
     })
   },
+  getTool: (state) => (id: number) => {
+    return state.tools[id]
+  },
   getRelativeLp(state) {
     return parseFloat(
       fees(
@@ -81,11 +84,21 @@ export const getters: GetterTree<RootState, RootState> = {
 
 export const mutations: MutationTree<RootState> = {
   addTool(state, payload) {
+    const newProxy = ethers.BigNumber.from(state.lp.proxy).sub(
+      ethers.BigNumber.from(payload.amount)
+    )._hex
+    state.lp.proxy = newProxy
     state.tools.push(payload)
   },
   removeTool(state, id: number) {
     state.tools[id] = state.tools[state.tools.length - 1]
     state.tools.pop()
+  },
+  setToolTime(state, payload) {
+    state.tools[payload.id].time = payload.time
+  },
+  setToolClaim(state, payload) {
+    state.tools[payload.id].claimLocked = payload.status
   },
   setProxy(state, address) {
     state.proxyAddress = address
@@ -180,7 +193,7 @@ export const actions: ActionTree<RootState, RootState> = {
 
       try {
         const balance = await proxy.balanceOf(state.proxyAddress)
-        if (state.lp.proxy === '0x00') {
+        if (state.tools.length === 0) {
           commit('createProxyBalance', balance._hex)
         }
         commit('setProxyBalance', balance._hex)

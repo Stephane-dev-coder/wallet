@@ -156,6 +156,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapGetters, mapMutations } from 'vuex'
 import { ethers, BigNumber } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -177,8 +178,8 @@ const fees = (value: BigNumber, fixedTo = 6) => {
 
 export default Vue.extend<any, any, any, any>({
   props: {
-    amount: {
-      type: String,
+    tool: {
+      type: Number,
       required: true,
     },
   },
@@ -192,6 +193,7 @@ export default Vue.extend<any, any, any, any>({
       sell: {
         isWaiting: false,
       },
+      amount: '0x00',
     }
   },
   computed: {
@@ -201,28 +203,47 @@ export default Vue.extend<any, any, any, any>({
     pickaxe() {
       switch (this.select) {
         case '2':
+          this.setToolTime({ id: this.tool, time: '0x3C26700' })
           return '/pickaxe/iron.png'
 
         case '3':
+          this.setToolTime({ id: this.tool, time: '0x5A39A80' })
           return '/pickaxe/gold.png'
 
         case '4':
+          this.setToolTime({ id: this.tool, time: '0x784CE00' })
           return '/pickaxe/diamond.png'
 
         case '5':
+          this.setToolTime({ id: this.tool, time: '0x9660180' })
           return '/pickaxe/netherite.png'
 
         case '1':
+          this.setToolTime({ id: this.tool, time: '0x1E13380' })
           return '/pickaxe/stone.png'
 
         default:
+          this.setToolTime({ id: this.tool, time: '0x00' })
           return '/pickaxe/wood.png'
       }
     },
     multiplier() {
       const multiplier = this.lockClaim ? 2 : 1
-      return multiplier * parseInt(this.select)
+      return multiplier * (parseInt(this.select) + 1)
     },
+    ...mapGetters('lockers', ['getTool']),
+  },
+  watch: {
+    lockClaim(newValue) {
+      this.setToolClaim({ id: this.tool, status: newValue })
+    },
+  },
+  async mounted() {
+    const tool = await this.getTool(this.tool)
+    this.amount = tool.amount
+  },
+  methods: {
+    ...mapMutations('lockers', ['setToolTime', 'setToolClaim']),
   },
 })
 </script>
