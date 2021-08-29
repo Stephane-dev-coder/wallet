@@ -112,6 +112,7 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        @click="clickSell"
       >
         <i v-if="sell.isWaiting" class="bx bx-loader-alt animate-spin mr-1"></i>
         <span v-else>Vendre <i class="bx bxs-send ml-2"></i></span>
@@ -156,7 +157,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { ethers, BigNumber } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -194,6 +195,7 @@ export default Vue.extend<any, any, any, any>({
         isWaiting: false,
       },
       amount: '0x00',
+      intervals: [],
     }
   },
   computed: {
@@ -241,7 +243,6 @@ export default Vue.extend<any, any, any, any>({
   async mounted() {
     const tool = await this.getTool(this.tool)
     this.amount = tool.amount
-    console.log(tool)
     this.lockClaim = tool.claimLocked
     switch (tool.time) {
       case '0x1E13380':
@@ -267,7 +268,68 @@ export default Vue.extend<any, any, any, any>({
     }
   },
   methods: {
-    ...mapMutations('lockers', ['setToolTime', 'setToolClaim']),
+    async clickSell() {
+      const previousBalance: BigNumber = await this.getLpBalance()
+      const result = await this.destroyLp(this.tool)
+      if (result === -1) {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 10000,
+          title: 'Erreur',
+          text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
+        })
+      } else {
+        const idArray = this.intervals.length
+        const idInterval = setInterval(async () => {
+          const actualBalance: BigNumber = await this.getLpBalance()
+          if (actualBalance.lt(previousBalance)) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'success',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Niquel',
+              text: 'Votre argent est de retour !',
+            })
+            this.removeTool(this.tool)
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else if (this.intervals[idArray].itteration > 5) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'danger',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Oops !',
+              text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
+            })
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else {
+            this.intervals[idArray].itteration =
+              this.intervals[idArray].itteration + 1
+          }
+        }, 3000)
+        this.intervals.push({
+          id: idInterval,
+          itteration: 0,
+        })
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'success',
+          icon: `<i class='bx bxs-check-circle'></i>`,
+          duration: 4000,
+          title: 'Niquel',
+          text: 'Transaction envoyer au reseaux !',
+        })
+      }
+    },
+    ...mapMutations('lockers', ['setToolTime', 'setToolClaim', 'removeTool']),
+    ...mapActions('lockers', ['destroyLp', 'getLpBalance']),
   },
 })
 </script>

@@ -9,7 +9,10 @@ const factoryAbi = [
   'function getProxyOf(address user) external view returns (address proxy)',
 ]
 
-const proxyAbi = ['function createLP() external payable']
+const proxyAbi = [
+  'function createLP() external payable',
+  'function destroyLP(uint amount) external',
+]
 const pairAbi = ['function balanceOf(address) view returns (uint)']
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -135,7 +138,7 @@ export const actions: ActionTree<RootState, RootState> = {
   async createProxy() {
     const provider = await MetaMask.getProvider()
 
-    if (provider.ok && provider.provider) {
+    if (provider?.ok && provider.provider) {
       const superProvider = provider.provider
 
       const factory = new ethers.Contract(
@@ -156,7 +159,7 @@ export const actions: ActionTree<RootState, RootState> = {
   async getProxy({ commit }, address) {
     const provider = await MetaMask.getProvider()
 
-    if (provider.ok && provider.provider) {
+    if (provider?.ok && provider.provider) {
       const superProvider = provider.provider
 
       const factory = new ethers.Contract(
@@ -180,7 +183,7 @@ export const actions: ActionTree<RootState, RootState> = {
   async createLp({ state }, amount) {
     const provider = await MetaMask.getProvider()
 
-    if (provider.ok && provider.provider && state.proxyAddress !== '') {
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
       const superProvider = provider.provider
 
       const proxy = new ethers.Contract(
@@ -198,10 +201,33 @@ export const actions: ActionTree<RootState, RootState> = {
       return -1
     }
   },
+  async destroyLp({ state }, toolId) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const proxy = new ethers.Contract(
+        state.proxyAddress,
+        proxyAbi,
+        superProvider
+      ).connect(superProvider.getSigner())
+
+      const amount = state.tools[toolId].amount
+
+      try {
+        await proxy.destroyLP(ethers.BigNumber.from(amount))
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
   async getLpBalance({ commit, state }) {
     const provider = await MetaMask.getProvider()
 
-    if (provider.ok && provider.provider && state.proxyAddress !== '') {
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
       const superProvider = provider.provider
 
       const proxy = new ethers.Contract(

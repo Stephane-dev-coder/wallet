@@ -201,11 +201,11 @@ export default Vue.extend<any, any, any, any>({
         error?: { code: number; message: string } | undefined
       } = await this.connectWallet()
 
-      if (!result.ok) {
+      if (!result?.ok) {
         const title = 'Erreur Connexion !'
         let text = "Nous n'avons pas reussi a vous connecter !"
 
-        switch (result.error?.code) {
+        switch (result?.error?.code) {
           case 4001:
             text = 'Vous avez refuser de vous connecter avec metamask !'
             break

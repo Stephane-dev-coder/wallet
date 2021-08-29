@@ -158,7 +158,7 @@ export const actions: ActionTree<RootState, RootState> = {
   },
   async getETHBalance({ state }): Promise<BigNumber> {
     const provider = await MetaMask.getProvider()
-    if (provider.ok && provider.provider) {
+    if (provider?.ok && provider.provider) {
       const superProvider = provider.provider
       if (state.address !== '') {
         return await superProvider.getBalance(state.address)
@@ -171,7 +171,7 @@ export const actions: ActionTree<RootState, RootState> = {
   async getTokenBalance({ state }): Promise<BigNumber> {
     const provider = await MetaMask.getProvider()
 
-    if (provider.ok && provider.provider) {
+    if (provider?.ok && provider.provider) {
       const tokenInstance = new ethers.Contract(
         ContractAddress.token,
         tokenAbi,
@@ -192,7 +192,7 @@ export const actions: ActionTree<RootState, RootState> = {
     amount: BigNumber
   ): Promise<BigNumber> {
     const provider = await dispatch('getProvider')
-    if (provider.ok && provider.provider) {
+    if (provider?.ok && provider.provider) {
       const tokenInstance = new ethers.Contract(
         ContractAddress.token,
         tokenAbi,
@@ -210,7 +210,7 @@ export const actions: ActionTree<RootState, RootState> = {
   },
   async getWalletInfos({ commit, dispatch, state }) {
     const provider = await dispatch('getProvider')
-    if (provider.ok === true && provider.provider) {
+    if (provider?.ok === true && provider.provider) {
       const theProvider = provider.provider
 
       const tokenInstance = new ethers.Contract(
@@ -295,7 +295,7 @@ export const actions: ActionTree<RootState, RootState> = {
     }
   ) {
     const provider = await dispatch('getProvider')
-    if (provider.ok === true && provider.provider) {
+    if (provider?.ok === true && provider.provider) {
       const theProvider = provider.provider
       const tokenInstance = new ethers.Contract(
         ContractAddress.token,

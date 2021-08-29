@@ -277,6 +277,8 @@ export default Vue.extend<any, any, any, any>({
   },
   methods: {
     async clickAddETH() {
+      this.create.isWaiting = true
+      this.create.isDisable = true
       const previousBalance: BigNumber = await this.getLpBalance()
       const result = await this.createLp(this.amount)
       if (result === -1) {
@@ -288,6 +290,9 @@ export default Vue.extend<any, any, any, any>({
           title: 'Erreur',
           text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
         })
+
+        this.create.isWaiting = false
+        this.create.isDisable = false
       } else {
         const idArray = this.intervals.length
         const idInterval = setInterval(async () => {
@@ -301,6 +306,8 @@ export default Vue.extend<any, any, any, any>({
               title: 'Niquel',
               text: 'Votre forge a etait cree !',
             })
+            this.create.isWaiting = false
+            this.create.isDisable = false
             this.addTool({
               amount: actualBalance.sub(previousBalance)._hex,
               time: '0x00',
@@ -318,6 +325,8 @@ export default Vue.extend<any, any, any, any>({
               title: 'Oops !',
               text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
             })
+            this.create.isWaiting = false
+            this.create.isDisable = false
             clearInterval(this.intervals[idArray].id)
             this.intervals[idArray] = this.intervals[this.intervals.length - 1]
             this.intervals.pop()
@@ -357,7 +366,9 @@ export default Vue.extend<any, any, any, any>({
           this.factory.show =
             this.proxyAddress === '0x0000000000000000000000000000000000000000'
           this.create.isDisable = this.factory.show
-          await this.getProxy(this.address)
+          setTimeout(async () => {
+            await this.getProxy(this.address)
+          }, 1000)
         }
       }
     },
@@ -418,7 +429,7 @@ export default Vue.extend<any, any, any, any>({
           id: idInterval,
           itteration: 0,
         })
-        result.this.$vs.notification({
+        this.$vs.notification({
           position: 'top-right',
           color: 'success',
           icon: `<i class='bx bxs-check-circle'></i>`,
