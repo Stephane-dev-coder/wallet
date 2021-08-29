@@ -90,13 +90,31 @@
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-      <WidgetFillonVault :tool="0" />
+      <WidgetFillonVault
+        v-for="(vault, index) in getVaults"
+        :key="index"
+        :vault="index"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapActions, mapState, mapGetters } from 'vuex'
 
-export default Vue.extend<any, any, any, any>({})
+export default Vue.extend<any, any, any, any>({
+  computed: {
+    ...mapState('wallet', ['address']),
+    ...mapGetters('lockers', ['getVaults']),
+  },
+  mounted() {
+    setTimeout(() => {
+      this.createVaults(this.address)
+    }, 1000)
+  },
+  methods: {
+    ...mapActions('lockers', ['createVaults']),
+  },
+})
 </script>

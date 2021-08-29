@@ -16,6 +16,10 @@ const proxyAbi = [
 ]
 const pairAbi = ['function balanceOf(address) view returns (uint)']
 
+const lockerAbi = [
+  'function getVaultsOf(address user) view external returns(tuple(uint amount, uint unlock, uint multiplier, bool claimLocked)[] vaults)',
+]
+
 const fees = (value: BigNumber, fixedTo = 6) => {
   const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
   let price = value
@@ -42,11 +46,19 @@ interface State {
   }
   tools: { amount: string; time: string; claimLocked: boolean }[]
   vaults: {
-    amount: string
-    unlock: string
-    multiplier: string
-    claimLocked: boolean
-  }[]
+    user: {
+      amount: string
+      unlock: string
+      multiplier: string
+      claimLocked: boolean
+    }[]
+    proxy: {
+      amount: string
+      unlock: string
+      multiplier: string
+      claimLocked: boolean
+    }[]
+  }
   proxyAddress: string
 }
 
@@ -64,7 +76,10 @@ export const state = (): State => ({
     realProxy: '0x00',
   },
   tools: storageTools,
-  vaults: [],
+  vaults: {
+    user: [],
+    proxy: [],
+  },
   proxyAddress: storageProxyAddress || '',
 })
 
@@ -87,6 +102,23 @@ export const getters: GetterTree<RootState, RootState> = {
   },
   getTool: (state) => (id: number) => {
     return state.tools[id]
+  },
+  getVaults(state) {
+    const superState = [...state.vaults.proxy, ...state.vaults.user]
+    return superState.sort((vaultA, vaultB) => {
+      const a = ethers.BigNumber.from(vaultA.amount)
+      const b = ethers.BigNumber.from(vaultB.amount)
+      if (a.gt(b)) {
+        return -1
+      } else if (b.gt(a)) {
+        return 1
+      } else {
+        return 0
+      }
+    })
+  },
+  getVault: (_, getters) => (id: number) => {
+    return getters.getVaults[id]
   },
   getRelativeLp(state) {
     return parseFloat(
@@ -151,6 +183,13 @@ export const mutations: MutationTree<RootState> = {
   createProxyBalance(state, balance) {
     state.lp.realProxy = balance
     state.lp.proxy = balance
+  },
+  setVaults(state, payload) {
+    if (payload.type === 'user') {
+      state.vaults.user = payload.vaults
+    } else {
+      state.vaults.proxy = payload.vaults
+    }
   },
 }
 
@@ -310,6 +349,68 @@ export const actions: ActionTree<RootState, RootState> = {
           ethers.BigNumber.from(tool.time),
           tool.claimLocked
         )
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async createVaults({ state, commit }, address) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        lockerAbi,
+        superProvider
+      ).connect(superProvider.getSigner())
+
+      try {
+        const vaultsUser = await locker.getVaultsOf(address)
+        if (vaultsUser.length > 0) {
+          commit('setVaults', {
+            type: 'user',
+            vaults: vaultsUser.map(
+              (vault: {
+                amount: BigNumber
+                unlock: BigNumber
+                multiplier: BigNumber
+                claimLocked: boolean
+              }) => {
+                return {
+                  amount: vault.amount._hex,
+                  unlock: vault.unlock._hex,
+                  multiplier: vault.multiplier._hex,
+                  claimLocked: vault.claimLocked,
+                }
+              }
+            ),
+          })
+        }
+        const vaultsProxy = await locker.getVaultsOf(state.proxyAddress)
+        if (vaultsProxy.length > 0) {
+          commit('setVaults', {
+            type: 'proxy',
+            vaults: vaultsProxy.map(
+              (vault: {
+                amount: BigNumber
+                unlock: BigNumber
+                multiplier: BigNumber
+                claimLocked: boolean
+              }) => {
+                return {
+                  amount: vault.amount._hex,
+                  unlock: vault.unlock._hex,
+                  multiplier: vault.multiplier._hex,
+                  claimLocked: vault.claimLocked,
+                }
+              }
+            ),
+          })
+        }
       } catch (error) {
         return -1
       }
