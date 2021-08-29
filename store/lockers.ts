@@ -20,6 +20,8 @@ const pairAbi = ['function balanceOf(address) view returns (uint)']
 const lockerAbi = [
   'function getVaultsOf(address user) view external returns(tuple(uint amount, uint unlock, uint multiplier, bool claimLocked)[] vaults)',
   'function unstake(uint amount) external',
+  'function totalStaked() view external returns(uint totalStaked)',
+  'function stakedOf(address account) public view returns (uint amount)',
 ]
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -62,6 +64,8 @@ interface State {
     }[]
   }
   proxyAddress: string
+  totalStaked: BigNumber
+  userStaked: BigNumber
 }
 
 const storageProxyAddress = window.localStorage.getItem('proxyAddress')
@@ -83,6 +87,8 @@ export const state = (): State => ({
     proxy: [],
   },
   proxyAddress: storageProxyAddress || '',
+  totalStaked: ethers.BigNumber.from(0),
+  userStaked: ethers.BigNumber.from(0),
 })
 
 export type RootState = ReturnType<typeof state>
@@ -205,6 +211,12 @@ export const mutations: MutationTree<RootState> = {
     } else {
       state.vaults.proxy = payload.vaults
     }
+  },
+  setTotalStaked(state, number) {
+    state.totalStaked = number
+  },
+  setUserStaked(state, number) {
+    state.userStaked = number
   },
 }
 
@@ -431,6 +443,37 @@ export const actions: ActionTree<RootState, RootState> = {
       }
     } else {
       return -1
+    }
+  },
+  async createTotalStaked({ commit }) {
+    const provider = await MetaMask.getProvider()
+    if (provider?.ok && provider.provider) {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        lockerAbi,
+        superProvider
+      )
+
+      commit('setTotalStaked', await locker.totalStaked())
+    }
+  },
+  async createUserStaked({ commit, state }, address) {
+    const provider = await MetaMask.getProvider()
+    if (provider?.ok && provider.provider) {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        lockerAbi,
+        superProvider
+      )
+
+      const proxy: BigNumber = await locker.stakedOf(state.proxyAddress)
+      const user: BigNumber = await locker.stakedOf(address)
+
+      commit('setUserStaked', proxy.add(user))
     }
   },
   async lockerUnstake({ state, getters }, id) {
