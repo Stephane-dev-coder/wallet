@@ -18,10 +18,10 @@
         </h3>
         <div class="flex justify-between items-center">
           <p class="font-bold text-lg dark:text-white">
-            {{ 0.134 }} <span class="text-blue-500">STI</span>
+            {{ reward }} <span class="text-blue-500">STI</span>
           </p>
           <p class="font-bold text-xs dark:text-white">
-            ~ {{ 0.134 * 20 }} <span class="text-blue-500">STI</span> / min
+            ~ {{ reward * 20 }} <span class="text-blue-500">STI</span> / min
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@
         </h3>
         <div class="flex justify-between items-center">
           <p class="font-bold text-lg dark:text-white">
-            ~ {{ 0.134 * 20 * 0.01 }} <span class="text-blue-500">STI</span>
+            {{ rewardUser }} <span class="text-blue-500">STI</span>
           </p>
         </div>
       </div>
@@ -137,13 +137,22 @@ export default Vue.extend<any, any, any, any>({
     userLP() {
       return fees(this.userStaked)
     },
+    reward() {
+      return parseFloat(fees(this.rewardPerBlock))
+    },
+    rewardUser() {
+      return fees(
+        this.userStaked.mul(this.rewardPerBlock).div(this.totalStaked)
+      )
+    },
     ...mapState('wallet', ['address']),
-    ...mapState('lockers', ['totalStaked', 'userStaked']),
+    ...mapState('lockers', ['totalStaked', 'userStaked', 'rewardPerBlock']),
     ...mapGetters('lockers', ['getVaults']),
   },
   async mounted() {
     await this.createVaults(this.address)
     await this.createTotalStaked()
+    await this.createRewardPerBlock()
     await this.createUserStaked(this.address)
     this.populated = true
   },
@@ -152,6 +161,7 @@ export default Vue.extend<any, any, any, any>({
       'createVaults',
       'createTotalStaked',
       'createUserStaked',
+      'createRewardPerBlock',
     ]),
   },
 })

@@ -22,6 +22,7 @@ const lockerAbi = [
   'function unstake(uint amount) external',
   'function totalStaked() view external returns(uint totalStaked)',
   'function stakedOf(address account) public view returns (uint amount)',
+  'function _rewardPerBlock() view external returns(uint _rewardPerBlock)',
 ]
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -66,6 +67,7 @@ interface State {
   proxyAddress: string
   totalStaked: BigNumber
   userStaked: BigNumber
+  rewardPerBlock: BigNumber
 }
 
 const storageProxyAddress = window.localStorage.getItem('proxyAddress')
@@ -89,6 +91,7 @@ export const state = (): State => ({
   proxyAddress: storageProxyAddress || '',
   totalStaked: ethers.BigNumber.from(0),
   userStaked: ethers.BigNumber.from(0),
+  rewardPerBlock: ethers.BigNumber.from(0),
 })
 
 export type RootState = ReturnType<typeof state>
@@ -217,6 +220,9 @@ export const mutations: MutationTree<RootState> = {
   },
   setUserStaked(state, number) {
     state.userStaked = number
+  },
+  setRewardPerBlock(state, number) {
+    state.rewardPerBlock = number
   },
 }
 
@@ -474,6 +480,22 @@ export const actions: ActionTree<RootState, RootState> = {
       const user: BigNumber = await locker.stakedOf(address)
 
       commit('setUserStaked', proxy.add(user))
+    }
+  },
+  async createRewardPerBlock({ commit }) {
+    const provider = await MetaMask.getProvider()
+    if (provider?.ok && provider.provider) {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        lockerAbi,
+        superProvider
+      )
+
+      const reward: BigNumber = await locker._rewardPerBlock()
+
+      commit('setRewardPerBlock', reward)
     }
   },
   async lockerUnstake({ state, getters }, id) {
