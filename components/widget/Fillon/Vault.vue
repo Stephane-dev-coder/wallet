@@ -6,6 +6,20 @@
       </h3>
       <img :src="pickaxe" class="h-8 w-8 bg-gray-100 dark:bg-dark-2 rounded" />
     </div>
+    <div class="text-sm grid gap-2 mt-4">
+      <div
+        class="flex justify-between items-center font-semibold dark:text-white"
+      >
+        Temps restant
+        <span class="text-blue-500 font-bold">879 jours</span>
+      </div>
+      <div
+        class="flex justify-between items-center font-semibold dark:text-white"
+      >
+        Gains
+        <span class="text-blue-500 font-bold">2492749 STI</span>
+      </div>
+    </div>
     <div class="flex mt-5 justify-between">
       <button
         class="
