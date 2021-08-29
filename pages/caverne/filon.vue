@@ -89,7 +89,10 @@
         </div>
       </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+    <div
+      v-if="populated"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10"
+    >
       <WidgetFillonVault
         v-for="(vault, index) in getVaults"
         :key="index"
@@ -104,14 +107,18 @@ import Vue from 'vue'
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default Vue.extend<any, any, any, any>({
+  data() {
+    return {
+      populated: false,
+    }
+  },
   computed: {
     ...mapState('wallet', ['address']),
     ...mapGetters('lockers', ['getVaults']),
   },
-  mounted() {
-    setTimeout(() => {
-      this.createVaults(this.address)
-    }, 1000)
+  async mounted() {
+    await this.createVaults(this.address)
+    this.populated = true
   },
   methods: {
     ...mapActions('lockers', ['createVaults']),

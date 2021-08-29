@@ -73,6 +73,17 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        :disabled="unstakeDisable"
+        :class="{
+          'hover:text-white': !unstakeDisable,
+          'dark:hover:text-black': !unstakeDisable,
+          'hover:border-black': !unstakeDisable,
+          'dark:hover:border-white': !unstakeDisable,
+          'hover:bg-black': !unstakeDisable,
+          'dark:hover:bg-white': !unstakeDisable,
+          'cursor-default': unstakeDisable,
+        }"
+        @click="clickUnstake()"
       >
         <i v-if="false" class="bx bx-loader-alt animate-spin mr-1"></i>
         <span v-else>Vendre <i class="bx bxs-send ml-2"></i></span>
@@ -83,7 +94,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { BigNumber, ethers } from 'ethers'
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -115,6 +126,7 @@ export default Vue.extend<any, any, any, any>({
       amount: 0,
       pickaxe: '',
       claimDisable: false,
+      unstakeDisable: false,
     }
   },
   computed: {
@@ -124,6 +136,11 @@ export default Vue.extend<any, any, any, any>({
     const vault = this.getVault(this.vault)
     this.amount = parseFloat(fees(ethers.BigNumber.from(vault.amount)))
     const multiplier = ethers.BigNumber.from(vault.multiplier).toNumber()
+
+    const rightnow = parseInt(`${Date.now() / 1000}`)
+    if (rightnow < ethers.BigNumber.from(vault.unlock).toNumber()) {
+      this.unstakeDisable = true
+    }
 
     const isEnchant = vault.claimLocked
     this.claimDisable = vault.claimLocked
@@ -183,6 +200,78 @@ export default Vue.extend<any, any, any, any>({
           break
       }
     }
+  },
+  methods: {
+    async clickUnstake() {
+      const previousBalance: BigNumber = await this.getPowerBalance()
+      const result = await this.lockerUnstake(this.vault)
+      if (result === -1) {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 10000,
+          title: 'Erreur',
+          text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
+        })
+      } else if (result === -2) {
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'danger',
+          icon: `<i class='bx bxs-error-circle'></i>`,
+          duration: 10000,
+          title: 'Erreur',
+          text: "Vous ne pouvez pas deverouiller vos fond temps que le temps n'est pas ecouler !",
+        })
+      } else {
+        const idArray = this.intervals.length
+        const idInterval = setInterval(async () => {
+          const actualBalance: BigNumber = await this.getPowerBalance()
+          if (actualBalance.lt(previousBalance)) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'success',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Niquel',
+              text: 'Votre argent est de retour !',
+            })
+            this.removeTool(this.tool)
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else if (this.intervals[idArray].itteration > 5) {
+            this.$vs.notification({
+              position: 'top-right',
+              color: 'danger',
+              icon: `<i class='bx bxs-check-circle'></i>`,
+              duration: 4000,
+              title: 'Oops !',
+              text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
+            })
+            clearInterval(this.intervals[idArray].id)
+            this.intervals[idArray] = this.intervals[this.intervals.length - 1]
+            this.intervals.pop()
+          } else {
+            this.intervals[idArray].itteration =
+              this.intervals[idArray].itteration + 1
+          }
+        }, 3000)
+        this.intervals.push({
+          id: idInterval,
+          itteration: 0,
+        })
+        this.$vs.notification({
+          position: 'top-right',
+          color: 'success',
+          icon: `<i class='bx bxs-check-circle'></i>`,
+          duration: 4000,
+          title: 'Niquel',
+          text: 'Transaction envoyer au reseaux !',
+        })
+      }
+    },
+    ...mapActions('lockers', ['lockerUnstake', 'getPowerBalance']),
   },
 })
 </script>

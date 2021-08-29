@@ -13,11 +13,13 @@ const proxyAbi = [
   'function createLP() external payable',
   'function destroyLP(uint amount) external',
   'function stake(uint amount, uint time, bool isClaimLocked) external returns (uint multiplier, uint unlock)',
+  'function unstake(uint amount) external',
 ]
 const pairAbi = ['function balanceOf(address) view returns (uint)']
 
 const lockerAbi = [
   'function getVaultsOf(address user) view external returns(tuple(uint amount, uint unlock, uint multiplier, bool claimLocked)[] vaults)',
+  'function unstake(uint amount) external',
 ]
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -104,7 +106,20 @@ export const getters: GetterTree<RootState, RootState> = {
     return state.tools[id]
   },
   getVaults(state) {
-    const superState = [...state.vaults.proxy, ...state.vaults.user]
+    const superState = [
+      ...state.vaults.proxy.map((vault) => {
+        return {
+          type: 'proxy',
+          ...vault,
+        }
+      }),
+      ...state.vaults.user.map((vault) => {
+        return {
+          type: 'user',
+          ...vault,
+        }
+      }),
+    ]
     return superState.sort((vaultA, vaultB) => {
       const a = ethers.BigNumber.from(vaultA.amount)
       const b = ethers.BigNumber.from(vaultB.amount)
@@ -413,6 +428,54 @@ export const actions: ActionTree<RootState, RootState> = {
         }
       } catch (error) {
         return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async lockerUnstake({ state, getters }, id) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const vault: { amount: string; type: string } = getters.getVault(id)
+      if (vault.type === 'user') {
+        const locker = new ethers.Contract(
+          contracts.locker,
+          lockerAbi,
+          superProvider
+        ).connect(superProvider.getSigner())
+
+        try {
+          return await locker.unstake(ethers.BigNumber.from(vault.amount))
+        } catch (error) {
+          if (
+            error.data.message ===
+            "execution reverted: LPLocker: You can't withdraw more than you have unlocked !"
+          ) {
+            return -2
+          }
+          return -1
+        }
+      } else {
+        const proxy = new ethers.Contract(
+          state.proxyAddress,
+          proxyAbi,
+          superProvider
+        ).connect(superProvider.getSigner())
+
+        try {
+          return await proxy.unstake(ethers.BigNumber.from(vault.amount))
+        } catch (error) {
+          if (
+            error.data.message ===
+            "execution reverted: LPLocker: You can't withdraw more than you have unlocked !"
+          ) {
+            return -2
+          }
+          return -1
+        }
       }
     } else {
       return -1
