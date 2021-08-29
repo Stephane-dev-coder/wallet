@@ -33,6 +33,16 @@
           focus:outline-none
           dark:ring-offset-black
         "
+        :disabled="claimDisable"
+        :class="{
+          'hover:text-white': !claimDisable,
+          'dark:hover:text-black': !claimDisable,
+          'hover:border-black': !claimDisable,
+          'dark:hover:border-white': !claimDisable,
+          'hover:bg-black': !claimDisable,
+          'dark:hover:bg-white': !claimDisable,
+          'cursor-default': claimDisable,
+        }"
       >
         <i v-if="false" class="bx bx-loader-alt animate-spin mr-1"></i>
         <span v-else>Claim <i class="bx bxs-send ml-2"></i></span>
@@ -104,6 +114,7 @@ export default Vue.extend<any, any, any, any>({
     return {
       amount: 0,
       pickaxe: '',
+      claimDisable: false,
     }
   },
   computed: {
@@ -115,6 +126,7 @@ export default Vue.extend<any, any, any, any>({
     const multiplier = ethers.BigNumber.from(vault.multiplier).toNumber()
 
     const isEnchant = vault.claimLocked
+    this.claimDisable = vault.claimLocked
 
     if (isEnchant) {
       switch (multiplier) {
