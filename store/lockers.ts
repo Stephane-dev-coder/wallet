@@ -40,15 +40,21 @@ interface State {
   proxyAddress: string
 }
 
+const storageProxyAddress = window.localStorage.getItem('proxyAddress')
+const storageTools = JSON.parse(
+  window.localStorage.getItem('savedTools') || '[]'
+)
+const lpBalance = window.localStorage.getItem('lpBalance') || '0x00'
+
 export const state = (): State => ({
   lp: {
     user: '0x00',
     realUser: '0x00',
-    proxy: '0x00',
+    proxy: lpBalance,
     realProxy: '0x00',
   },
-  tools: [],
-  proxyAddress: '',
+  tools: storageTools,
+  proxyAddress: storageProxyAddress || '',
 })
 
 export type RootState = ReturnType<typeof state>
@@ -89,19 +95,32 @@ export const mutations: MutationTree<RootState> = {
     )._hex
     state.lp.proxy = newProxy
     state.tools.push(payload)
+    window.localStorage.setItem('lpBalance', newProxy)
+    window.localStorage.setItem('savedTools', JSON.stringify(state.tools))
   },
   removeTool(state, id: number) {
+    const amount = state.tools[id].amount
+    const newProxy = ethers.BigNumber.from(state.lp.proxy).add(
+      ethers.BigNumber.from(amount)
+    )._hex
     state.tools[id] = state.tools[state.tools.length - 1]
     state.tools.pop()
+    window.localStorage.setItem('lpBalance', newProxy)
+    window.localStorage.setItem('savedTools', JSON.stringify(state.tools))
   },
   setToolTime(state, payload) {
     state.tools[payload.id].time = payload.time
+    window.localStorage.setItem('savedTools', JSON.stringify(state.tools))
   },
   setToolClaim(state, payload) {
     state.tools[payload.id].claimLocked = payload.status
+    window.localStorage.setItem('savedTools', JSON.stringify(state.tools))
   },
   setProxy(state, address) {
-    state.proxyAddress = address
+    if (address !== state.proxyAddress) {
+      state.proxyAddress = address
+      window.localStorage.setItem('proxyAddress', address)
+    }
   },
   setProxyBalance(state, balance) {
     state.lp.realProxy = balance

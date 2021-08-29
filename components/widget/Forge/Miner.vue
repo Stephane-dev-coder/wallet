@@ -241,6 +241,30 @@ export default Vue.extend<any, any, any, any>({
   async mounted() {
     const tool = await this.getTool(this.tool)
     this.amount = tool.amount
+    console.log(tool)
+    this.lockClaim = tool.claimLocked
+    switch (tool.time) {
+      case '0x1E13380':
+        this.select = '1'
+        break
+      case '0x3C26700':
+        this.select = '2'
+        break
+      case '0x5A39A80':
+        this.select = '3'
+        break
+      case '0x784CE00':
+        this.select = '4'
+        break
+
+      case '0x9660180':
+        this.select = '5'
+        break
+      case '0x00':
+      default:
+        this.select = ''
+        break
+    }
   },
   methods: {
     ...mapMutations('lockers', ['setToolTime', 'setToolClaim']),
