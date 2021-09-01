@@ -150,13 +150,10 @@ export const getters: GetterTree<RootState, RootState> = {
     return getters.getVaults[id]
   },
   getRelativeLp(state) {
-    return parseFloat(
-      fees(
-        ethers.BigNumber.from(state.lp.proxy).add(
-          ethers.BigNumber.from(state.lp.user)
-        )
-      )
+    const amount = ethers.BigNumber.from(state.lp.proxy).add(
+      ethers.BigNumber.from(state.lp.user)
     )
+    return parseFloat(fees(amount))
   },
 }
 
@@ -179,6 +176,15 @@ export const mutations: MutationTree<RootState> = {
     state.tools.pop()
     window.localStorage.setItem('lpBalance', newProxy)
     window.localStorage.setItem('savedTools', JSON.stringify(state.tools))
+  },
+  removeVault(state, { id, type }) {
+    if (type === 'user') {
+      state.vaults.user[id] = state.vaults.user[state.vaults.user.length - 1]
+      state.vaults.user.pop()
+    } else {
+      state.vaults.proxy[id] = state.vaults.proxy[state.vaults.proxy.length - 1]
+      state.vaults.proxy.pop()
+    }
   },
   setToolTime(state, payload) {
     state.tools[payload.id].time = payload.time
@@ -204,7 +210,7 @@ export const mutations: MutationTree<RootState> = {
       total = total.add(ethers.BigNumber.from(tool.amount))
     }
     total = total.add(state.lp.proxy)
-    if (total > balance) {
+    if (total.gt(balance)) {
       state.tools = []
       window.localStorage.setItem('savedTools', JSON.stringify(state.tools))
     }
@@ -238,6 +244,20 @@ export const mutations: MutationTree<RootState> = {
 }
 
 export const actions: ActionTree<RootState, RootState> = {
+  destroyVault({ commit, getters, state }, vaultId) {
+    const vaults = getters.getVaults
+    const vault = vaults[vaultId]
+    let index
+    if (vault.type === 'user') {
+      index = state.vaults.user.indexOf(vault)
+    } else {
+      index = state.vaults.proxy.indexOf(vault)
+    }
+
+    if (index !== -1) {
+      commit('removeVault', { id: index, type: vault.type })
+    }
+  },
   async createProxy() {
     const provider = await MetaMask.getProvider()
 
@@ -316,6 +336,9 @@ export const actions: ActionTree<RootState, RootState> = {
         superProvider
       ).connect(superProvider.getSigner())
 
+      console.log(toolId)
+      console.log(state.tools)
+
       const amount = state.tools[toolId].amount
 
       try {
@@ -333,14 +356,14 @@ export const actions: ActionTree<RootState, RootState> = {
     if (provider?.ok && provider.provider && state.proxyAddress !== '') {
       const superProvider = provider.provider
 
-      const proxy = new ethers.Contract(
+      const pair = new ethers.Contract(
         contracts.tokenPair,
         pairAbi,
         superProvider
       )
 
       try {
-        const balance = await proxy.balanceOf(state.proxyAddress)
+        const balance = await pair.balanceOf(state.proxyAddress)
         if (state.tools.length === 0) {
           commit('createProxyBalance', balance._hex)
         }
@@ -568,6 +591,8 @@ export const actions: ActionTree<RootState, RootState> = {
           superProvider
         ).connect(superProvider.getSigner())
 
+        console.log('User')
+
         try {
           return await locker.unstake(ethers.BigNumber.from(vault.amount))
         } catch (error) {
@@ -585,6 +610,8 @@ export const actions: ActionTree<RootState, RootState> = {
           proxyAbi,
           superProvider
         ).connect(superProvider.getSigner())
+
+        console.log(vault.amount)
 
         try {
           return await proxy.unstake(ethers.BigNumber.from(vault.amount))

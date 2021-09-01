@@ -141,6 +141,7 @@ export default Vue.extend<any, any, any, any>({
       pickaxe: '',
       claimDisable: false,
       unstakeDisable: false,
+      intervals: [],
     }
   },
   computed: {
@@ -250,7 +251,7 @@ export default Vue.extend<any, any, any, any>({
               title: 'Niquel',
               text: 'Votre argent est de retour !',
             })
-            this.removeTool(this.tool)
+            this.destroyVault(this.vault)
             clearInterval(this.intervals[idArray].id)
             this.intervals[idArray] = this.intervals[this.intervals.length - 1]
             this.intervals.pop()
@@ -285,7 +286,11 @@ export default Vue.extend<any, any, any, any>({
         })
       }
     },
-    ...mapActions('lockers', ['lockerUnstake', 'getPowerBalance']),
+    ...mapActions('lockers', [
+      'lockerUnstake',
+      'getPowerBalance',
+      'destroyVault',
+    ]),
   },
 })
 </script>
