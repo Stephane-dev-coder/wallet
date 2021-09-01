@@ -138,24 +138,31 @@ export default Vue.extend<any, any, any, any>({
       return fees(this.userStaked)
     },
     reward() {
-      return parseFloat(fees(this.rewardPerBlock))
+      if (this.block < this.startingBlock) {
+        return 0
+      } else {
+        return parseFloat(fees(this.rewardPerBlock))
+      }
     },
     rewardUser() {
-      if (!(this.totalPower as BigNumber).isZero) {
+      if (this.block < this.startingBlock) {
+        return 0
+      } else if (!(this.totalPower as BigNumber).isZero()) {
         return fees(
           this.userPower.mul(this.rewardPerBlock).div(this.totalPower)
         )
       } else {
-        return fees(ethers.BigNumber.from(0))
+        return 0
       }
     },
-    ...mapState('wallet', ['address']),
+    ...mapState('wallet', ['address', 'block']),
     ...mapState('lockers', [
       'totalStaked',
       'userStaked',
       'rewardPerBlock',
       'userPower',
       'totalPower',
+      'startingBlock',
     ]),
     ...mapGetters('lockers', ['getVaults']),
   },
@@ -168,6 +175,7 @@ export default Vue.extend<any, any, any, any>({
       await this.createTotalStaked()
       await this.createTotalPowerBalance()
       await this.createRewardPerBlock()
+      await this.createStartingBlock()
     } else {
       this.$router.push('/caverne')
     }
@@ -182,6 +190,7 @@ export default Vue.extend<any, any, any, any>({
       'createRewardPerBlock',
       'createTotalPowerBalance',
       'createPowerBalance',
+      'createStartingBlock',
     ]),
   },
 })

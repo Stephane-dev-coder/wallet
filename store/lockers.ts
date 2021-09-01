@@ -24,6 +24,7 @@ const lockerAbi = [
   'function stakedOf(address account) public view returns (uint amount)',
   'function _rewardPerBlock() view external returns(uint _rewardPerBlock)',
   'function totalSupply() external view returns (uint256)',
+  'function genesisBlock() view external returns(uint genesisBlock)',
 ]
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -71,6 +72,7 @@ interface State {
   rewardPerBlock: BigNumber
   userPower: BigNumber
   totalPower: BigNumber
+  startingBlock: BigNumber
 }
 
 const storageProxyAddress = window.localStorage.getItem('proxyAddress')
@@ -97,6 +99,7 @@ export const state = (): State => ({
   rewardPerBlock: ethers.BigNumber.from(0),
   userPower: ethers.BigNumber.from(0),
   totalPower: ethers.BigNumber.from(0),
+  startingBlock: ethers.BigNumber.from(0),
 })
 
 export type RootState = ReturnType<typeof state>
@@ -241,6 +244,9 @@ export const mutations: MutationTree<RootState> = {
   setTotalPower(state, number) {
     state.totalPower = number
   },
+  setGenesisBlock(state, block) {
+    state.startingBlock = block
+  },
 }
 
 export const actions: ActionTree<RootState, RootState> = {
@@ -336,9 +342,6 @@ export const actions: ActionTree<RootState, RootState> = {
         superProvider
       ).connect(superProvider.getSigner())
 
-      console.log(toolId)
-      console.log(state.tools)
-
       const amount = state.tools[toolId].amount
 
       try {
@@ -428,7 +431,7 @@ export const actions: ActionTree<RootState, RootState> = {
 
       const locker = new ethers.Contract(
         contracts.locker,
-        pairAbi,
+        lockerAbi,
         superProvider
       )
 
@@ -577,6 +580,22 @@ export const actions: ActionTree<RootState, RootState> = {
       commit('setRewardPerBlock', reward)
     }
   },
+  async createStartingBlock({ commit }) {
+    const provider = await MetaMask.getProvider()
+    if (provider?.ok && provider.provider) {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        lockerAbi,
+        superProvider
+      )
+
+      const block: BigNumber = await locker.genesisBlock()
+
+      commit('setGenesisBlock', block)
+    }
+  },
   async lockerUnstake({ state, getters }, id) {
     const provider = await MetaMask.getProvider()
 
@@ -590,8 +609,6 @@ export const actions: ActionTree<RootState, RootState> = {
           lockerAbi,
           superProvider
         ).connect(superProvider.getSigner())
-
-        console.log('User')
 
         try {
           return await locker.unstake(ethers.BigNumber.from(vault.amount))
@@ -610,8 +627,6 @@ export const actions: ActionTree<RootState, RootState> = {
           proxyAbi,
           superProvider
         ).connect(superProvider.getSigner())
-
-        console.log(vault.amount)
 
         try {
           return await proxy.unstake(ethers.BigNumber.from(vault.amount))

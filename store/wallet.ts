@@ -37,6 +37,7 @@ interface State {
     >
   }
   gasPrice: BigNumber
+  block: number
 }
 
 export const state = (): State => ({
@@ -58,6 +59,7 @@ export const state = (): State => ({
   gasPrice: ethers.BigNumber.from(2).mul(
     ethers.BigNumber.from(10).pow(ethers.BigNumber.from(9))
   ),
+  block: 0,
 })
 
 export type RootState = ReturnType<typeof state>
@@ -115,6 +117,9 @@ export const mutations: MutationTree<RootState> = {
         state.callbacks.transaction = callbacks.funs
         break
     }
+  },
+  setBlockNumber(state, blockNumber) {
+    state.block = blockNumber
   },
 }
 
@@ -241,11 +246,20 @@ export const actions: ActionTree<RootState, RootState> = {
         commit('setCallback', { type: 'transaction', funs: callbacks })
       })
 
+      setInterval(async () => {
+        const blockNumber = await (
+          theProvider as ethers.providers.Web3Provider
+        ).getBlockNumber()
+        commit('setBlockNumber', blockNumber)
+      }, 3000)
+
       setInterval(() => {
         const callbacks = state.callbacks.transaction.filter(
           async (fun) => await !fun(null, null, null, null, true)
         )
-        commit('setCallback', { type: 'transaction', funs: callbacks })
+        if (callbacks !== state.callbacks.transaction) {
+          commit('setCallback', { type: 'transaction', funs: callbacks })
+        }
       }, 10000)
       commit('setBalance', await dispatch('getTokenBalance'))
     }
