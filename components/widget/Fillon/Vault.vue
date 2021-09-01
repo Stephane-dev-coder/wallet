@@ -11,7 +11,7 @@
         class="flex justify-between items-center font-semibold dark:text-white"
       >
         Temps restant
-        <span class="text-blue-500 font-bold">879 jours</span>
+        <span class="text-blue-500 font-bold">{{ displayTime }}</span>
       </div>
       <div
         class="flex justify-between items-center font-semibold dark:text-white"
@@ -142,10 +142,52 @@ export default Vue.extend<any, any, any, any>({
       claimDisable: false,
       unstakeDisable: false,
       intervals: [],
+      time: 0,
+      intervalId: 0,
     }
   },
   computed: {
+    displayTime() {
+      if (this.time <= 0) {
+        return '0s'
+      } else {
+        let string = ''
+        const years = parseInt(`${this.time / (3600 * 24 * 365)}`)
+        if (years > 0) {
+          string = years + ' y'
+        }
+
+        let time = this.time - years * 3600 * 24 * 365
+        const days = parseInt(`${time / (3600 * 24)}`)
+        if (days > 0) {
+          string = string + ' ' + days + ' d'
+        }
+
+        time = time - days * 3600 * 24
+        const hours = parseInt(`${time / 3600}`)
+        if (hours > 0) {
+          string = string + ' ' + hours + ' h'
+        }
+
+        time = time - hours * 3600
+        const minutes = parseInt(`${time / 60}`)
+        if (minutes > 0) {
+          string = string + ' ' + minutes + ' m'
+        }
+
+        time = time - minutes * 60
+        const seconds = parseInt(`${time}`)
+        if (seconds > 0) {
+          string = string + ' ' + seconds + ' s'
+        }
+
+        return string
+      }
+    },
     ...mapGetters('lockers', ['getVault']),
+  },
+  destroyed() {
+    clearInterval(this.intervalId)
   },
   mounted() {
     const vault = this.getVault(this.vault)
@@ -159,6 +201,11 @@ export default Vue.extend<any, any, any, any>({
 
     const isEnchant = vault.claimLocked
     this.claimDisable = vault.claimLocked
+
+    this.intervalId = setInterval(() => {
+      const rightnow = parseInt(`${Date.now() / 1000}`)
+      this.time = ethers.BigNumber.from(vault.unlock).toNumber() - rightnow
+    }, 1000)
 
     if (isEnchant) {
       switch (multiplier) {
