@@ -141,27 +141,45 @@ export default Vue.extend<any, any, any, any>({
       return parseFloat(fees(this.rewardPerBlock))
     },
     rewardUser() {
-      return fees(
-        this.userStaked.mul(this.rewardPerBlock).div(this.totalStaked)
-      )
+      if (!(this.totalPower as BigNumber).isZero) {
+        return fees(
+          this.userPower.mul(this.rewardPerBlock).div(this.totalPower)
+        )
+      } else {
+        return fees(ethers.BigNumber.from(0))
+      }
     },
     ...mapState('wallet', ['address']),
-    ...mapState('lockers', ['totalStaked', 'userStaked', 'rewardPerBlock']),
+    ...mapState('lockers', [
+      'totalStaked',
+      'userStaked',
+      'rewardPerBlock',
+      'userPower',
+      'totalPower',
+    ]),
     ...mapGetters('lockers', ['getVaults']),
   },
   async mounted() {
-    await this.createVaults(this.address)
+    await this.getProxy(this.address)
     await this.createTotalStaked()
+    await this.createTotalPowerBalance()
     await this.createRewardPerBlock()
-    await this.createUserStaked(this.address)
+    if (this.address === '') {
+      await this.createPowerBalance(this.address)
+      await this.createUserStaked(this.address)
+      await this.createVaults(this.address)
+    }
     this.populated = true
   },
   methods: {
     ...mapActions('lockers', [
+      'getProxy',
       'createVaults',
       'createTotalStaked',
       'createUserStaked',
       'createRewardPerBlock',
+      'createTotalPowerBalance',
+      'createPowerBalance',
     ]),
   },
 })

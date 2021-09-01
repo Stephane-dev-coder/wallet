@@ -23,6 +23,7 @@ const lockerAbi = [
   'function totalStaked() view external returns(uint totalStaked)',
   'function stakedOf(address account) public view returns (uint amount)',
   'function _rewardPerBlock() view external returns(uint _rewardPerBlock)',
+  'function totalSupply() external view returns (uint256)',
 ]
 
 const fees = (value: BigNumber, fixedTo = 6) => {
@@ -68,6 +69,8 @@ interface State {
   totalStaked: BigNumber
   userStaked: BigNumber
   rewardPerBlock: BigNumber
+  userPower: BigNumber
+  totalPower: BigNumber
 }
 
 const storageProxyAddress = window.localStorage.getItem('proxyAddress')
@@ -92,6 +95,8 @@ export const state = (): State => ({
   totalStaked: ethers.BigNumber.from(0),
   userStaked: ethers.BigNumber.from(0),
   rewardPerBlock: ethers.BigNumber.from(0),
+  userPower: ethers.BigNumber.from(0),
+  totalPower: ethers.BigNumber.from(0),
 })
 
 export type RootState = ReturnType<typeof state>
@@ -223,6 +228,12 @@ export const mutations: MutationTree<RootState> = {
   },
   setRewardPerBlock(state, number) {
     state.rewardPerBlock = number
+  },
+  setUserPower(state, number) {
+    state.userPower = number
+  },
+  setTotalPower(state, number) {
+    state.totalPower = number
   },
 }
 
@@ -356,6 +367,51 @@ export const actions: ActionTree<RootState, RootState> = {
 
       try {
         return await locker.balanceOf(state.proxyAddress)
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async createPowerBalance({ state, commit }, address) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        pairAbi,
+        superProvider
+      )
+
+      try {
+        const proxy: BigNumber = await locker.balanceOf(state.proxyAddress)
+        const user: BigNumber = await locker.balanceOf(address)
+        commit('setUserPower', proxy.add(user))
+      } catch (error) {
+        return -1
+      }
+    } else {
+      return -1
+    }
+  },
+  async createTotalPowerBalance({ state, commit }) {
+    const provider = await MetaMask.getProvider()
+
+    if (provider?.ok && provider.provider && state.proxyAddress !== '') {
+      const superProvider = provider.provider
+
+      const locker = new ethers.Contract(
+        contracts.locker,
+        pairAbi,
+        superProvider
+      )
+
+      try {
+        const total: BigNumber = await locker.totalSupply()
+        commit('setTotalPower', total)
       } catch (error) {
         return -1
       }
