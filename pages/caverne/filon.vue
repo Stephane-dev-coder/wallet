@@ -160,14 +160,16 @@ export default Vue.extend<any, any, any, any>({
     ...mapGetters('lockers', ['getVaults']),
   },
   async mounted() {
-    await this.getProxy(this.address)
-    await this.createTotalStaked()
-    await this.createTotalPowerBalance()
-    await this.createRewardPerBlock()
-    if (this.address === '') {
+    if (this.address !== '') {
+      await this.getProxy(this.address)
       await this.createPowerBalance(this.address)
       await this.createUserStaked(this.address)
       await this.createVaults(this.address)
+      await this.createTotalStaked()
+      await this.createTotalPowerBalance()
+      await this.createRewardPerBlock()
+    } else {
+      this.$router.push('/caverne')
     }
     this.populated = true
   },

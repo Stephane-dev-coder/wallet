@@ -225,12 +225,6 @@ import Vue from 'vue'
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
 import { ethers, BigNumber } from 'ethers'
 
-const timer = (time: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time)
-  })
-}
-
 const fees = (value: BigNumber, fixedTo = 6) => {
   const puissance = 18 - fixedTo < 0 ? 18 : 18 - fixedTo
   let price = value
@@ -271,9 +265,13 @@ export default Vue.extend<any, any, any, any>({
     ...mapState('wallet', ['address']),
   },
   async mounted() {
-    this.maxETH = parseFloat(fees(await this.getETHBalance()))
-    await this.syncProxy()
-    await this.getLpBalance()
+    if (this.address !== '') {
+      this.maxETH = parseFloat(fees(await this.getETHBalance()))
+      await this.syncProxy()
+      await this.getLpBalance()
+    } else {
+      this.$router.push('/caverne')
+    }
   },
   methods: {
     async clickAddETH() {
@@ -355,7 +353,6 @@ export default Vue.extend<any, any, any, any>({
           this.proxyAddress === '' ||
           this.proxyAddress === '0x0000000000000000000000000000000000000000'
         ) {
-          await timer(1000)
           const address = await this.getProxy(this.address)
           if (address !== -1) {
             this.factory.show =
@@ -363,12 +360,14 @@ export default Vue.extend<any, any, any, any>({
             this.create.isDisable = this.factory.show
           }
         } else {
+          if (
+            this.proxyAddress === '0x0000000000000000000000000000000000000000'
+          ) {
+            await this.getProxy(this.address)
+          }
           this.factory.show =
             this.proxyAddress === '0x0000000000000000000000000000000000000000'
           this.create.isDisable = this.factory.show
-          setTimeout(async () => {
-            await this.getProxy(this.address)
-          }, 1000)
         }
       }
     },
