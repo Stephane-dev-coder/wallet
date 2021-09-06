@@ -13,12 +13,13 @@
         Temps restant
         <span class="text-blue-500 font-bold">{{ displayTime }}</span>
       </div>
-      <div
+      <!-- <div
         class="flex justify-between items-center font-semibold dark:text-white"
       >
         Gains
         <span class="text-blue-500 font-bold">2492749 STI</span>
       </div>
+      -->
     </div>
     <div class="flex mt-5 justify-between">
       <button
