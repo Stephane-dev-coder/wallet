@@ -39,6 +39,11 @@
             <div class="mx-2">🎨</div>
             <template #tooltip> Designer </template>
           </vs-tooltip>
+            <div>/</div>
+            <vs-tooltip>
+            <div class="mx-2">🔑</div>
+            <template #tooltip> Administrateur </template>
+          </vs-tooltip>
         </div>
         <p class="text-gray-400 text-xs mt-2">
           Le meilleur devellopeur du monde !
@@ -74,6 +79,11 @@
           <vs-tooltip>
             <div class="mx-2">🔑</div>
             <template #tooltip> Administrateur </template>
+          </vs-tooltip>
+              <div>/</div>
+                    <vs-tooltip>
+            <div class="mx-2">👑</div>
+            <template #tooltip> Co-Createur </template>
           </vs-tooltip>
         </div>
         <p class="text-gray-400 text-xs mt-2">
