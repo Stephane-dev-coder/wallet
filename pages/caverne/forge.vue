@@ -3,7 +3,7 @@
     <div class="mt-10">
       <h2 class="text-3xl dark:text-gray-200">La Forge</h2>
       <span class="text-sm dark:text-gray-400"
-        >Recuperer vos outils et aller miner !
+        >Recupérez vos outils et allez miner !
       </span>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
