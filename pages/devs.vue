@@ -87,7 +87,7 @@
           </vs-tooltip>
         </div>
         <p class="text-gray-400 text-xs mt-2">
-          Il est la pour la mixiter de la communauter.
+          Il est la pour la mixitée de la communautée.
         </p>
       </div>
       <div
@@ -113,7 +113,7 @@
           </vs-tooltip>
         </div>
         <p class="text-gray-400 text-xs mt-2">
-          Le createur du design du token STI.
+          Le créateur du design du token STI.
         </p>
       </div>
     </div>
