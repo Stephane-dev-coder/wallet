@@ -11,7 +11,7 @@
         class="w-full rounded-2xl overflow-hidden bg-white dark:bg-dark-1 p-4"
       >
         <div class="flex justify-between">
-          <h3 class="text-xl font-semibold dark:text-white">Cree outils</h3>
+          <h3 class="text-xl font-semibold dark:text-white">Créez des outils</h3>
           <img
             src="/pickaxe/wood.png"
             class="h-14 w-14 bg-gray-100 dark:bg-dark-2 rounded-lg"
@@ -154,7 +154,7 @@
               v-if="create.isWaiting"
               class="bx bx-loader-alt animate-spin mr-1"
             ></i>
-            <span v-else>Cree <i class="bx bxs-send ml-2"></i></span>
+            <span v-else>Créer <i class="bx bxs-send ml-2"></i></span>
           </button>
         </div>
       </div>
@@ -163,7 +163,7 @@
       >
         <div class="flex justify-between">
           <h3 class="text-xl font-semibold dark:text-white">
-            Comment ca marche ?
+            Comment ça marche ?
           </h3>
           <div
             class="
@@ -181,10 +181,10 @@
           </div>
         </div>
         <p class="mt-2 text-sm dark:text-white">
-          <span class="font-bold">1. Cree des LPs</span>, pour cela vous devez
-          fournir des STI + BNB dans la liquidity pool ici representer comme une
-          pioche en bois. Grace a la forge il ne vous faut que du
-          <span class="font-bold">BNB</span>, la forge cree pour vous les STI.
+          <span class="font-bold">1. Créer des LPs</span>, pour cela vous devez
+          fournir des STI + BNB dans la liquidity pool ici representée comme une
+          pioche en bois. Grace à la forge il ne vous faut que du
+          <span class="font-bold">BNB</span>, la forge crée pour vous les STI.
         </p>
         <p
           class="
@@ -197,15 +197,15 @@
             rounded
           "
         >
-          <i class="bx bxs-info-circle mr-2"></i> Les pioche en bois ne mine pas
+          <i class="bx bxs-info-circle mr-2"></i> Les pioches en bois ne minent pas
           !
         </p>
         <p class="mt-2 text-sm dark:text-white">
-          <span class="font-bold">2. Miner</span> une fois que vous avez cree
+          <span class="font-bold">2. Miner</span> une fois que vous avez créé
           une pioche en bois vous pouvez la convertir en une pioche plus
-          puissante. Les pioche puissante une fois cree mine du
+          puissante. Les pioches puissantes une fois créées minent du
           <span class="font-bold">STI</span>. Plus la pioche est puissante plus
-          vous en miner !
+          vous en minez !
         </p>
       </div>
     </div>
@@ -286,7 +286,7 @@ export default Vue.extend<any, any, any, any>({
           icon: `<i class='bx bxs-error-circle'></i>`,
           duration: 10000,
           title: 'Erreur',
-          text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
+          text: "Desolé j'ai pas le temps de programmer l'erreur mais juste contactez l'admin et on trouvera la solution !",
         })
 
         this.create.isWaiting = false
