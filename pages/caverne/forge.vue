@@ -389,7 +389,7 @@ export default Vue.extend<any, any, any, any>({
           icon: `<i class='bx bxs-error-circle'></i>`,
           duration: 10000,
           title: 'Erreur',
-          text: "Desoler j'ai pas le temps de programmer l'erreur mais juste contacter l'admin et on trouvera la solution !",
+          text: "Desolé j'ai pas le temps de programmer l'erreur mais juste contactez l'admin et on trouvera la solution !",
         })
       } else {
         const idArray = this.intervals.length
@@ -402,7 +402,7 @@ export default Vue.extend<any, any, any, any>({
               icon: `<i class='bx bxs-check-circle'></i>`,
               duration: 4000,
               title: 'Niquel',
-              text: 'Votre argent a etait crediter !',
+              text: 'Votre argent a été credité !',
             })
             clearInterval(this.intervals[idArray].id)
             this.intervals[idArray] = this.intervals[this.intervals.length - 1]
@@ -413,8 +413,8 @@ export default Vue.extend<any, any, any, any>({
               color: 'danger',
               icon: `<i class='bx bxs-check-circle'></i>`,
               duration: 4000,
-              title: 'Oops !',
-              text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
+              title: 'Oups !',
+              text: "Soit la transaction n'est pas passée soit nous avons fait une erreur, pour en être sûr regardez votre portefeuille",
             })
             clearInterval(this.intervals[idArray].id)
             this.intervals[idArray] = this.intervals[this.intervals.length - 1]
