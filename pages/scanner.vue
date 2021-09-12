@@ -36,7 +36,7 @@
         dark:bg-nice-dark dark:text-white
       "
     >
-      Address incorrect !
+      Adresse incorrecte !
     </div>
     <qrcode-stream @decode="onDecode" @init="onInit" />
   </div>
@@ -99,27 +99,27 @@ export default Vue.extend<any, any, any>({
 
         switch (error.name) {
           case 'NotAllowedError':
-            text = 'Vous devez donner accee a la camera !'
+            text = 'Vous devez donner accès à la caméra !'
             break
           case 'NotFoundError':
-            text = 'Aucune camera a etait trouver !'
+            text = 'Aucune caméra n`à été trouvée !'
             break
           case 'InsecureContextError':
           case 'NotSupportedError':
             text =
-              'Vous devez avoir une connexion securiser HTTPS pour acceder a la camera'
+              'Vous devez avoir une connexion securisée HTTPS pour accéder à la caméra'
             break
 
           case 'NotReadableError':
-            text = 'Camera deja utiliser'
+            text = 'Caméra déjà utilisée'
             break
 
           case 'OverconstrainedError':
-            text = "La camera n'est pas exploitable par notre logiciel"
+            text = "La caméra n'est pas exploitable par notre logiciel"
             break
 
           case 'StreamApiNotSupportedError':
-            text = "Le navigateur ne permet d'acceder a la camera"
+            text = "Le navigateur ne permet pas d'accéder à la caméra"
             break
 
           default:
