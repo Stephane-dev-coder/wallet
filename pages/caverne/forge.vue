@@ -343,7 +343,7 @@ export default Vue.extend<any, any, any, any>({
           icon: `<i class='bx bxs-check-circle'></i>`,
           duration: 4000,
           title: 'Niquel',
-          text: 'Transaction envoyée au reséau !',
+          text: 'Transaction envoyée au réseau !',
         })
       }
     },
