@@ -302,7 +302,7 @@ export default Vue.extend<any, any, any, any>({
               icon: `<i class='bx bxs-check-circle'></i>`,
               duration: 4000,
               title: 'Niquel',
-              text: 'Votre forge a etait cree !',
+              text: 'Votre forge a été créée !',
             })
             this.create.isWaiting = false
             this.create.isDisable = false
@@ -320,8 +320,8 @@ export default Vue.extend<any, any, any, any>({
               color: 'danger',
               icon: `<i class='bx bxs-check-circle'></i>`,
               duration: 4000,
-              title: 'Oops !',
-              text: "Soit la transaction n'est pas passer soit nous avons fait une erreur pour en etre sur regarder votre portefeuille",
+              title: 'Oups !',
+              text: "Soit la transaction n'est pas passée soit nous avons fait une erreur, pour en être sûr regardez votre portefeuille",
             })
             this.create.isWaiting = false
             this.create.isDisable = false
@@ -343,7 +343,7 @@ export default Vue.extend<any, any, any, any>({
           icon: `<i class='bx bxs-check-circle'></i>`,
           duration: 4000,
           title: 'Niquel',
-          text: 'Transaction envoyer au reseaux !',
+          text: 'Transaction envoyée au reséau !',
         })
       }
     },
