@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4 mb-20">
     <div class="mt-10">
-      <h2 class="text-3xl dark:text-gray-200">Nos Ingenieurs !</h2>
+      <h2 class="text-3xl dark:text-gray-200">Nos Ingénieurs !</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mt-10">
       <div
@@ -27,12 +27,12 @@
         >
           <vs-tooltip>
             <div class="mx-2">💻</div>
-            <template #tooltip> Devellopeur </template>
+            <template #tooltip> Développeur </template>
           </vs-tooltip>
           <div>/</div>
           <vs-tooltip>
             <div class="mx-2">👑</div>
-            <template #tooltip> Createur </template>
+            <template #tooltip> Créateur </template>
           </vs-tooltip>
           <div>/</div>
           <vs-tooltip>
@@ -46,7 +46,7 @@
           </vs-tooltip>
         </div>
         <p class="text-gray-400 text-xs mt-2">
-          Le meilleur devellopeur du monde !
+          Le meilleur développeur du monde !
         </p>
       </div>
       <div
@@ -68,7 +68,7 @@
         >
           <vs-tooltip>
             <div class="mx-2">💻</div>
-            <template #tooltip>Future Devellopeur </template>
+            <template #tooltip>Futur Développeur </template>
           </vs-tooltip>
           <div>/</div>
           <vs-tooltip>
@@ -83,7 +83,7 @@
               <div>/</div>
                     <vs-tooltip>
             <div class="mx-2">👑</div>
-            <template #tooltip> Co-Createur </template>
+            <template #tooltip> Co-Créateur </template>
           </vs-tooltip>
         </div>
         <p class="text-gray-400 text-xs mt-2">
